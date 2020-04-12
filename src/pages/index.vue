@@ -1,0 +1,201 @@
+<template>
+    <div class="dialogBox">
+        <header>
+            <img
+                src="https://pic4.zhimg.com/80/v2-bfdf1bf48988291c43ab3c1ed1d02526_720w.jpg"
+                alt
+                class="photo"
+            />
+            <span>{{nowName}}</span>
+        </header>
+        <!-- 聊天组 -->
+        <div class="center">
+            <div class="dialogGroup">
+                <dialogGroup
+                    v-for="item in dialogGroupData"
+                    :key="item.picture"
+                    :picture="item.picture"
+                    :lastDialog="item.lastDialog"
+                    :groupName="item.groupName"
+                    :allData="item"
+                    @givePrantMessage="parentFunction"
+                ></dialogGroup>
+                <!-- <dialogGroup v-for="item in dialogGroupData" :key="item.picture"></dialogGroup> -->
+            </div>
+            <!-- 发消息 -->
+            <div class="currentDialog">
+                <p class="gourpTitle">{{currentDialogGroupName}}</p>
+                <div class="dialog">
+                    <dialogMessage
+                        v-for="item in currentDialogGroup"
+                        :key="item.dialog"
+                        :name="item.name"
+                        :dialog="item.dialog"
+                    />
+                </div>
+                <div class="inputDialog">
+                    <!-- 这个可以优化一下，滚动条太难看 -->
+                    <textarea class="inputBox" v-model="sendMessage"></textarea>
+                    <button @click="websocket">发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    data() {
+        return {
+            dialogGroupData: [], // 聊天组
+            currentDialogGroup: [], // 当前聊天组的聊天内容
+            currentDialogGroupName: "...", // 当前聊天组的名字
+            nowName: "", // sessionStorage使用的
+            sendMessage: "" // 即将发送的信息d
+        };
+    },
+    methods: {
+        parentFunction(data) {
+            
+            this.currentDialogGroup = data.data;
+            this.currentDialogGroupName = data.groupName;
+        },
+        websocket() {
+            // 1. 当点击发送按钮的时候给服务端发送请求 √
+            // 2. 更新文件里的数据
+            // 3. 把更新完的文件数据再次返回回来
+
+            // 服务器发送来发送来数据怎么自动响应
+
+            const ws = new WebSocket("ws://localhost:3000/");
+
+            ws.onopen = () => {
+                // 点击发送按钮，将文本框的信息发送服务端
+                ws.send(
+                    JSON.stringify({
+                        groupName: this.currentDialogGroupName,
+                        name: this.nowName,
+                        dialog: this.sendMessage
+                    })
+                );
+            };
+
+            ws.onmessage = event => {
+                console.log(event);
+                this.currentDialogGroup = JSON.parse(event.data);
+            };
+
+            ws.onclose = () => {};
+        }
+    },
+    created() {
+        fetch("http://localhost:3000/dialogData")
+            .then(data => data.json())
+            .then(data => {
+                this.dialogGroupData = data;
+            
+            });
+
+        this.nowName = sessionStorage.getItem("nowName");
+    }
+};
+</script>
+
+<style scoped>
+p {
+    font-size: 50px;
+}
+
+.dialogBox {
+    width: 80%;
+    height: 80%;
+    margin: 100px auto;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+}
+
+header {
+    background-image: linear-gradient(to right, #ccffff, #ccccff);
+    width: 100%;
+    height: 80px;
+    padding: 0 10px;
+    display: flex;
+}
+
+header .photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin: 10px 20px;
+}
+
+header span {
+    font-size: 20px;
+    height: 100%;
+    /* line-height: 100%; */
+    line-height: 80px;
+
+    /* height: 100%; */
+}
+.center {
+    display: grid;
+    width: 100%;
+    height: 90%;
+    grid-template-columns: 30% 70%;
+    grid-template-rows: 100%;
+}
+
+.dialogGroup {
+    height: 100%;
+    /* background: red; */
+}
+
+.currentDialog {
+    height: 100%;
+    border-left: 1px solid #ccc;
+    /* background: purple; */
+    position: relative;
+}
+.currentDialog p {
+    font-size: 24px;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+}
+
+.currentDialog .inputDialog {
+    width: 100%;
+    height: 150px;
+    border-top: 1px solid #ccc;
+    bottom: 0;
+    position: absolute;
+}
+.currentDialog .dialog {
+    padding: 10px;
+    overflow-y: scroll;
+    height: 400px;
+}
+
+.inputDialog .inputBox {
+    width: 100%;
+    height: 75%;
+    padding: 5px;
+    font-size: 20px;
+    border-top: 1px solid #ccc;
+    resize: none;
+    border: 0;
+    outline: none;
+}
+.inputDialog button {
+    width: 70px;
+    height: 25px;
+    line-height: 25px;
+    color: #000;
+    background-image: linear-gradient(to right, #ccffff, #ccccff);
+    border: 0;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    outline: none;
+}
+</style>
