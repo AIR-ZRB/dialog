@@ -88,6 +88,29 @@ wss.on("connection", function (ws) {
 ```
 
 
+## 组件
+
+为了组件能有良好的复用性，很多东西是不能写死的
+
++ editGroup组件往外暴露了一个方法，提交时可以根据是创建还是修改了实现不同的业务
+
+
+## 问题
+
+
+如果你出现了`GET http://localhost..... net::ERR_CONNECTION_REFUSED`的情况
+可以重启一下项目`npm run dev`或者`npm run serve`具体查看`package.json`的`script`
+
+出现这个问题的原因是因为你切换无线网络，导致开发服务器的IP地址换了，这样开发服务器会不知道如何确定访问源。
+
+
+## 最后
+
+
+吐槽一下，ElementUI这个库不是很好用
+
+
+
 
 
 

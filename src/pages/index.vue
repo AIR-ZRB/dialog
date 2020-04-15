@@ -20,12 +20,13 @@
                     :allData="item"
                     @givePrantMessage="parentFunction"
                 ></dialogGroup>
-                <!-- <dialogGroup v-for="item in dialogGroupData" :key="item.picture"></dialogGroup> -->
+
+                <div class="addGroup" @click="addGroup">+</div>
             </div>
             <!-- 发消息 -->
             <div class="currentDialog">
                 <p class="gourpTitle">{{currentDialogGroupName}}</p>
-                <div class="dialog">
+                <div class="dialog" ref="dialog">
                     <dialogMessage
                         v-for="item in currentDialogGroup"
                         :key="item.dialog"
@@ -36,10 +37,16 @@
                 <div class="inputDialog">
                     <!-- 这个可以优化一下，滚动条太难看 -->
                     <textarea class="inputBox" v-model="sendMessage"></textarea>
-                    <button @click="websocket">发送</button>
+                    <button @click="outputMessage">发送</button>
                 </div>
             </div>
         </div>
+
+
+
+        <editGroup v-show="editGroupShow" @submitData="submitData"/>
+
+
     </div>
 </template>
 
@@ -51,24 +58,18 @@ export default {
             currentDialogGroup: [], // 当前聊天组的聊天内容
             currentDialogGroupName: "...", // 当前聊天组的名字
             nowName: "", // sessionStorage使用的
-            sendMessage: "" // 即将发送的信息d
+            sendMessage: "", // 即将发送的信息d
+            editGroupShow: false
         };
     },
     methods: {
         parentFunction(data) {
-            
+            // 从子组件获取一些数据
             this.currentDialogGroup = data.data;
             this.currentDialogGroupName = data.groupName;
         },
-        websocket() {
-            // 1. 当点击发送按钮的时候给服务端发送请求 √
-            // 2. 更新文件里的数据
-            // 3. 把更新完的文件数据再次返回回来
-
-            // 服务器发送来发送来数据怎么自动响应
-
+        outputMessage() {
             const ws = new WebSocket("ws://localhost:3000/");
-
             ws.onopen = () => {
                 // 点击发送按钮，将文本框的信息发送服务端
                 ws.send(
@@ -79,13 +80,32 @@ export default {
                     })
                 );
             };
+        },
+        websocket() {
+            // 1. 当点击发送按钮的时候给服务端发送请求 √
+            // 2. 更新文件里的数据
+            // 3. 把更新完的文件数据再次返回回来
+
+            const ws = new WebSocket("ws://localhost:3000/");
 
             ws.onmessage = event => {
-                console.log(event);
-                this.currentDialogGroup = JSON.parse(event.data);
-            };
+                let data = JSON.parse(event.data);
+                delete data.groupName;
+                console.log(data);
 
-            ws.onclose = () => {};
+                this.currentDialogGroup.push({
+                    name: data.name,
+                    dialog: data.dialog
+                });
+
+                this.$refs.dialog.scrollTo(0, 10000000);
+            };
+        },
+        addGroup(){
+            this.editGroupShow = true
+        },
+        submitData(){
+            this.editGroupShow = false;
         }
     },
     created() {
@@ -93,10 +113,14 @@ export default {
             .then(data => data.json())
             .then(data => {
                 this.dialogGroupData = data;
-            
             });
-
         this.nowName = sessionStorage.getItem("nowName");
+    },
+    mounted() {
+        this.websocket();
+        // document.body.onbeforeunload = () => {
+        //     return 123
+        // };
     }
 };
 </script>
@@ -109,7 +133,8 @@ p {
 .dialogBox {
     width: 80%;
     height: 80%;
-    margin: 100px auto;
+    min-width: 900px;
+    margin: 100px auto 0;
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid #ccc;
@@ -147,8 +172,24 @@ header span {
 }
 
 .dialogGroup {
+    position: relative;
     height: 100%;
     /* background: red; */
+}
+
+.dialogGroup .addGroup {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 50%;
+    background: skyblue;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 28px;
+    color: #fff;
 }
 
 .currentDialog {
@@ -173,7 +214,7 @@ header span {
 .currentDialog .dialog {
     padding: 10px;
     overflow-y: scroll;
-    height: 400px;
+    height: 450px;
 }
 
 .inputDialog .inputBox {

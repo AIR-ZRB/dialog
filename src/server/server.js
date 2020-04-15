@@ -96,7 +96,6 @@ let wsServer = app.listen(3000, () => {
 // webSocket部分
 let WebSocketServer = require('ws').Server
 let wss = new WebSocketServer({
-    // port: 4000
     server: wsServer
 });
 let i = 0;
@@ -113,58 +112,56 @@ wss.on('connection', function (ws) {
     // 形参message是从前端接收过来的，前端接收的是什么返回的就是什么
     ws.on('message', function (message) {
         let mess = JSON.parse(message);
-        console.log(mess)
-       
 
-        let addDialogGroup = "";
-        let index = "";
-        let getData = "";
+
+
+
+        // 这里优化，不应该每次都写入
+        // 每次写入会导致消息有时不会同步
         _readFile(dialogData)
             .then((data) => {
+                let addCurrentData = data.filter(item => item.groupName === mess.groupName);
+                let addIndex = 0;
 
-                // 获取读取的数据
-                getData = data;
-
-
-                // 获取当前项
-                addDialogGroup = data.filter(element => {
-                    return element.groupName === mess.groupName
+                data.forEach((item, index) => {
+                    if (item.groupName === mess.groupName) {
+                        addIndex = index;
+                    }
                 })
-                // 获取当前索引值
-                data.forEach((element, i) => {
-                    element.groupName === mess.groupName ? index = i : null
-                });
-
 
                 delete mess.groupName;
-                addDialogGroup[0].data.push(mess);
-
-
-                getData[index].data = addDialogGroup[0].data
-
-
-                // console.log(getData)
-
-                
-
+                data[addIndex].data.push(mess);
+                console.log(data)
+                return data;
             })
-            .then(() => {
-                _writeFile(dialogData, getData)
-                    .then(() => {
-                        ws.send(JSON.stringify(addDialogGroup[0].data), (err) => {
-                            if (err) {
-                                console.log(`[SERVER] error: ${err}`);
-                            }
-                        });
-                    })
-            }).then(()=>{
-                wss.broadcast(mess);
+            .then((data) => {
+                _writeFile(dialogData, data)
             })
 
 
-        // 这里是返回给前端的数据
+                // 这里是返回给前端的数据
+                wss.broadcast(message);
+         
+
+
+
+
+
+
+
+
+
 
     })
+
+
+
+
+
+
+
+
+
 });
 
 
