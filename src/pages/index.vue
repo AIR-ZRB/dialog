@@ -20,13 +20,22 @@
                     :allData="item"
                     :index="index"
                     @givePrantMessage="parentFunction"
+                     v-initializeClick="index"
                 ></dialogGroup>
 
                 <div class="addGroup" @click="()=>{ this.editGroupShow = true}">+</div>
             </div>
             <!-- 发消息 -->
             <div class="currentDialog">
-                <p class="gourpTitle">{{currentDialogGroupName}}</p>
+                <p class="gourpTitle">
+                    {{currentDialogGroupName}}
+                    <span
+                        class="setting"
+                        @click="()=>{ this.editGroupShow = true}"
+                    >
+                        <i class="el-icon-setting"></i>
+                    </span>
+                </p>
                 <div class="dialog" ref="dialog">
                     <dialogMessage
                         v-for="item in currentDialogGroup"
@@ -78,9 +87,6 @@ export default {
                     })
                 );
             };
-
-
-
         },
         websocket() {
             // 1. 当点击发送按钮的时候给服务端发送请求 √
@@ -106,10 +112,8 @@ export default {
             // 创建群聊
             this.editGroupShow = false;
             // 还没写入文件。。。。。。。。。
+            // 要发送到服务端来进行多端同步
             this.dialogGroupData.push(groupData);
-        },
-        lightHeight(index){
-            console.log(index)
         }
     },
     created() {
@@ -122,6 +126,15 @@ export default {
     },
     mounted() {
         this.websocket();
+    },
+    directives: {
+        initializeClick: {
+            inserted(el, binding) {
+                if (binding.value === 0) {
+                    el.click();
+                }
+            }
+        }
     }
 };
 </script>
@@ -159,10 +172,7 @@ header .photo {
 header span {
     font-size: 20px;
     height: 100%;
-    /* line-height: 100%; */
     line-height: 80px;
-
-    /* height: 100%; */
 }
 .center {
     display: grid;
@@ -177,7 +187,6 @@ header span {
     height: 100%;
     /* background: red; */
 }
-
 
 .dialogGroup .addGroup {
     width: 60px;
@@ -200,6 +209,13 @@ header span {
     /* background: purple; */
     position: relative;
 }
+
+.currentDialog .setting i {
+    float: right;
+    font-weight: 700;
+    cursor: pointer;
+}
+
 .currentDialog p {
     font-size: 24px;
     padding: 10px 20px;
@@ -241,6 +257,4 @@ header span {
     right: 10px;
     outline: none;
 }
-
-
 </style>

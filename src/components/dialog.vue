@@ -17,21 +17,19 @@ export default {
         giveParentMessage() {
             // 给父组件传值的
             this.$emit("givePrantMessage", this._props.allData);
-            console.log(this._props.index);
-            let dialogGroupItems = document.getElementsByClassName("dialogGroupItems");
-            // console.log(dialogGroups)
-            dialogGroupItems.forEach((element,index) => {
-                this._props.index === index ? element.classList.add("lightHeight"):element.classList.remove("lightHeight")
+            
+            let dialogGroupItems = document.getElementsByClassName(
+                "dialogGroupItems"
+            );
+        
+            dialogGroupItems.forEach((element, index) => {
+                this._props.index === index
+                    ? element.classList.add("lightHeight")
+                    : element.classList.remove("lightHeight");
             });
-
-
-
         }
     },
-    created() {
-        // console.log(this._props);
-        // console.log(this._props.index)
-    },
+    created() {},
     props: ["picture", "lastDialog", "groupName", "allData", "index"]
 };
 </script>
@@ -46,7 +44,7 @@ export default {
 }
 
 .lightHeight {
-    background-image: linear-gradient(to right, #ccffff, #ccccff)
+    background-image: linear-gradient(to right, #ccffff, #ccccff);
 }
 
 .GroupPhoto {
