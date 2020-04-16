@@ -1,9 +1,17 @@
 <template>
     <div class="addGroup">
         <div class="addGroupBox">
+
+            <img :src="picture" alt="" width="100" height="100" class="picture">
+            <section>
+                <p>群头像</p>
+                <el-input v-model="picture" placeholder="请输入头像连接"></el-input>
+            </section>
+
+
             <section>
                 <p>群名</p>
-                <el-input v-model="input" placeholder="请输入内容"></el-input>
+                <el-input v-model="input" placeholder="请输入群名"></el-input>
             </section>
 
             <section>
@@ -30,19 +38,26 @@
 export default {
     data() {
         return {
-            show: false,
-            input: "",
+            input: "",      // 群名 
+            picture: "http://b-ssl.duitang.com/uploads/item/201807/06/20180706112153_kYsVd.thumb.700_0.jpeg",    // 头像
             groupMembers: ["青空", "水无月一见", "白鸟留依"], // 群成员
             groupTags: ["交流群","Vue"] // 群标签
         };
     },
-    props:["isShow"],
     methods: {
         handleClose(tag) {
             this.groupMembers.splice(this.groupMembers.indexOf(tag), 1);
         },
         submitData(){
-            this.$emit("submitData")
+            let GroupData = {
+                groupName: this.input,
+                picture: this.picture,
+                groupMembers: this.groupMembers,
+                groupTags: this.groupTags,
+                data:[],
+                lastDialog: ""
+            }
+            this.$emit("submitData",GroupData)
         }
     }
 };
@@ -65,11 +80,19 @@ export default {
     box-sizing: border-box;
     padding:10px 10px 20px 10px;
     width: 400px;
-    /* height: 500px; */
-    
+    position: relative;
     background: #fff;
     border-radius: 10px;
 }
+
+.addGroupBox .picture {
+    width: 100px;
+    height: 100px;
+    display: block;
+    margin: -50px auto 0;
+    border-radius: 50%;
+}
+
 .addGroupBox section {
     margin: 20px 0;
 }

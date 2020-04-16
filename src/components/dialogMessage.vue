@@ -1,5 +1,5 @@
 <template>
-    <div class="dialogMessage">
+    <div :class="_props.nowName == _props.name ? 'fr' :'dialogMessage'">
         <p class="id">{{name}}</p>
         <p class="dialog">{{dialog}}</p>
     </div>
@@ -10,26 +10,34 @@ export default {
     data() {
         return {};
     },
-    props: ["name", "dialog"]
+    props: ["name", "dialog", "nowName"]
 };
 </script>
 
 <style scoped>
-.dialogMessage {
+.dialogMessage,
+.fr {
     overflow: hidden;
     margin-bottom: 10px;
-     font-size: 18px;
+    font-size: 18px;
+    width: 100%;
+    float: left;
 }
 
-.dialogMessage .id {
+.fr {
+    display: grid;
+    place-items: end;
+    margin-left: auto;
+}
+
+.id {
     font-size: 16px;
     color: #999;
     margin-bottom: 10px;
 }
-.dialogMessage .dialog {
- 
+.dialog {
     padding: 10px 20px;
-    background-image: linear-gradient(#66CCFF,#CCFFFF);
+    background-image: linear-gradient(#66ccff, #ccffff);
     float: left;
     border-radius: 10px;
 }

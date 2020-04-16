@@ -13,7 +13,7 @@
             <div class="dialogGroup">
                 <dialogGroup
                     v-for="item in dialogGroupData"
-                    :key="item.picture"
+                    :key="item.groupName"
                     :picture="item.picture"
                     :lastDialog="item.lastDialog"
                     :groupName="item.groupName"
@@ -32,6 +32,7 @@
                         :key="item.dialog"
                         :name="item.name"
                         :dialog="item.dialog"
+                        :nowName="nowName"
                     />
                 </div>
                 <div class="inputDialog">
@@ -43,9 +44,7 @@
         </div>
 
 
-
         <editGroup v-show="editGroupShow" @submitData="submitData"/>
-
 
     </div>
 </template>
@@ -104,8 +103,11 @@ export default {
         addGroup(){
             this.editGroupShow = true
         },
-        submitData(){
+        submitData(groupData){
+            // 创建群聊
             this.editGroupShow = false;
+            // 还没写入文件。。。。。。。。。
+            this.dialogGroupData.push(groupData)
         }
     },
     created() {
@@ -118,9 +120,6 @@ export default {
     },
     mounted() {
         this.websocket();
-        // document.body.onbeforeunload = () => {
-        //     return 123
-        // };
     }
 };
 </script>
