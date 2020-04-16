@@ -1,5 +1,5 @@
 <template>
-    <div class="dialogGroup" @click="giveParentMessage">
+    <div class="dialogGroupItems" @click="giveParentMessage">
         <img :src="_props.picture" alt class="GroupPhoto" />
         <div class="message">
             <p>{{_props.groupName}}</p>
@@ -14,25 +14,41 @@ export default {
         return {};
     },
     methods: {
-       giveParentMessage(){
-           // 给父组件传值的
-           this.$emit("givePrantMessage",this._props.allData)
-       }
+        giveParentMessage() {
+            // 给父组件传值的
+            this.$emit("givePrantMessage", this._props.allData);
+            console.log(this._props.index);
+            let dialogGroupItems = document.getElementsByClassName("dialogGroupItems");
+            // console.log(dialogGroups)
+            dialogGroupItems.forEach((element,index) => {
+                this._props.index === index ? element.classList.add("lightHeight"):element.classList.remove("lightHeight")
+            });
+
+
+
+        }
     },
     created() {
         // console.log(this._props);
+        // console.log(this._props.index)
     },
-    props: ["picture", "lastDialog", "groupName","allData"]
+    props: ["picture", "lastDialog", "groupName", "allData", "index"]
 };
 </script>
 
 <style scoped>
-.dialogGroup {
+.dialogGroupItems,
+.lightHeight {
     width: 100%;
     height: 80px;
-    background:rgba(255, 255, 255,.8);
+    background: rgba(255, 255, 255, 0.8);
     cursor: pointer;
 }
+
+.lightHeight {
+    background-image: linear-gradient(to right, #ccffff, #ccccff)
+}
+
 .GroupPhoto {
     width: 60px;
     height: 60px;
@@ -57,6 +73,4 @@ export default {
 .message p:last-child {
     font-size: 14px;
 }
-
-
 </style>

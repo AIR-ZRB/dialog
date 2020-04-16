@@ -113,7 +113,7 @@ wss.on('connection', function (ws) {
     ws.on('message', function (message) {
         let mess = JSON.parse(message);
 
-
+        console.log(message)
 
 
         // 这里优化，不应该每次都写入
@@ -122,7 +122,7 @@ wss.on('connection', function (ws) {
             .then((data) => {
                 let addCurrentData = data.filter(item => item.groupName === mess.groupName);
                 let addIndex = 0;
-
+                
                 data.forEach((item, index) => {
                     if (item.groupName === mess.groupName) {
                         addIndex = index;
@@ -131,17 +131,20 @@ wss.on('connection', function (ws) {
 
                 delete mess.groupName;
                 data[addIndex].data.push(mess);
-                console.log(data)
+                
+
+                console.log(data);
+
+
                 return data;
             })
             .then((data) => {
-                _writeFile(dialogData, data)
+                // _writeFile(dialogData, data)
             })
 
 
-                // 这里是返回给前端的数据
-                wss.broadcast(message);
-         
+        // 这里是返回给前端的数据
+        wss.broadcast(message);
 
 
 

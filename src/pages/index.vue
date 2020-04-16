@@ -12,16 +12,17 @@
         <div class="center">
             <div class="dialogGroup">
                 <dialogGroup
-                    v-for="item in dialogGroupData"
+                    v-for="(item,index) in dialogGroupData"
                     :key="item.groupName"
                     :picture="item.picture"
                     :lastDialog="item.lastDialog"
                     :groupName="item.groupName"
                     :allData="item"
+                    :index="index"
                     @givePrantMessage="parentFunction"
                 ></dialogGroup>
 
-                <div class="addGroup" @click="addGroup">+</div>
+                <div class="addGroup" @click="()=>{ this.editGroupShow = true}">+</div>
             </div>
             <!-- 发消息 -->
             <div class="currentDialog">
@@ -43,9 +44,7 @@
             </div>
         </div>
 
-
-        <editGroup v-show="editGroupShow" @submitData="submitData"/>
-
+        <editGroup v-show="editGroupShow" @submitData="submitData" />
     </div>
 </template>
 
@@ -79,6 +78,9 @@ export default {
                     })
                 );
             };
+
+
+
         },
         websocket() {
             // 1. 当点击发送按钮的时候给服务端发送请求 √
@@ -100,14 +102,14 @@ export default {
                 this.$refs.dialog.scrollTo(0, 10000000);
             };
         },
-        addGroup(){
-            this.editGroupShow = true
-        },
-        submitData(groupData){
+        submitData(groupData) {
             // 创建群聊
             this.editGroupShow = false;
             // 还没写入文件。。。。。。。。。
-            this.dialogGroupData.push(groupData)
+            this.dialogGroupData.push(groupData);
+        },
+        lightHeight(index){
+            console.log(index)
         }
     },
     created() {
@@ -176,6 +178,7 @@ header span {
     /* background: red; */
 }
 
+
 .dialogGroup .addGroup {
     width: 60px;
     height: 60px;
@@ -238,4 +241,6 @@ header span {
     right: 10px;
     outline: none;
 }
+
+
 </style>
