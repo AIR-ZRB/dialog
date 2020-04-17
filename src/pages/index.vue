@@ -139,10 +139,11 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 p {
     font-size: 50px;
 }
+$theme: red;
 
 .dialogBox {
     width: 80%;

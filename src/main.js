@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import VueRouter from "vue-router";
+import Vuex from "vuex";
 
 Vue.use(VueRouter);
-
+Vue.use(Vuex);
 
 import ElementUI from "element-ui";
 import 'element-ui/lib/theme-chalk/index.css';
@@ -38,9 +39,16 @@ const router = new VueRouter({
   ]
 })
 
+const store = new Vuex.Store({
+  state: {
+
+  }
+})
+
 
 new Vue({
   router,
+  store,
   render: h => h(App),
 
 }).$mount('#app')
