@@ -1,5 +1,5 @@
 <template>
-    <div class="addGroup">
+    <div class="addGroup" @click="cancelEdit">
         <div class="addGroupBox">
 
             <img :src="picture" alt="" width="100" height="100" class="picture">
@@ -39,7 +39,7 @@ export default {
     data() {
         return {
             input: "",      // 群名 
-            picture: "http://b-ssl.duitang.com/uploads/item/201807/06/20180706112153_kYsVd.thumb.700_0.jpeg",    // 头像
+            picture: "",    // 头像
             groupMembers: ["青空", "水无月一见", "白鸟留依"], // 群成员
             groupTags: ["交流群","Vue"] // 群标签
         };
@@ -58,6 +58,14 @@ export default {
                 lastDialog: ""
             }
             this.$emit("submitData",GroupData)
+        },
+        cancelEdit(){
+            console.log(event.target.className);
+            if(event.target.className === "addGroup"){
+                this.$emit("submitData",false);
+                // console.log(22);
+
+            }
         }
     }
 };

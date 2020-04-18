@@ -20,7 +20,7 @@
                     :allData="item"
                     :index="index"
                     @givePrantMessage="parentFunction"
-                     v-initializeClick="index"
+                    v-initializeClick="index"
                 ></dialogGroup>
 
                 <div class="addGroup" @click="()=>{ this.editGroupShow = true}">+</div>
@@ -33,7 +33,9 @@
                         class="setting"
                         @click="()=>{ this.editGroupShow = true}"
                     >
-                        <i class="el-icon-setting"></i>
+                        <el-tooltip class="item" effect="dark" content="设置群信息" placement="top">
+                            <i class="el-icon-setting"></i>
+                        </el-tooltip>
                     </span>
                 </p>
                 <div class="dialog" ref="dialog">
@@ -110,10 +112,27 @@ export default {
         },
         submitData(groupData) {
             // 创建群聊
+
             this.editGroupShow = false;
+            if (!groupData) {
+                // cancel的情况下
+                return;
+            }
+
             // 还没写入文件。。。。。。。。。
             // 要发送到服务端来进行多端同步
             this.dialogGroupData.push(groupData);
+
+            const h = this.$createElement;
+
+            this.$notify({
+                title: "标题名称",
+                message: h(
+                    "i",
+                    { style: "color: teal" },
+                    "添加成功"
+                )
+            });
         }
     },
     created() {
