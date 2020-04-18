@@ -39,7 +39,7 @@ export default {
     data() {
         return {
             input: "",      // 群名 
-            picture: "",    // 头像
+            picture: "https://pic1.zhimg.com/80/v2-0d3a635ba2703360e0aac4afc71e91b2_720w.jpg",    // 头像
             groupMembers: ["青空", "水无月一见", "白鸟留依"], // 群成员
             groupTags: ["交流群","Vue"] // 群标签
         };
@@ -60,11 +60,9 @@ export default {
             this.$emit("submitData",GroupData)
         },
         cancelEdit(){
-            console.log(event.target.className);
+          
             if(event.target.className === "addGroup"){
                 this.$emit("submitData",false);
-                // console.log(22);
-
             }
         }
     }
