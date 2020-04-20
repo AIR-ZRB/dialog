@@ -13,7 +13,7 @@
       <div class="dialogGroup">
         <dialogGroup
           v-for="(item, index) in dialogGroupData"
-          :key="item.groupName"
+          :key="item.picture"
           :picture="item.picture"
           :lastDialog="item.lastDialog"
           :groupName="item.groupName"
@@ -81,7 +81,7 @@
 export default {
   data() {
     return {
-      dialogGroupData: [], // 聊天组
+      dialogGroupData: [], // 所有聊天数据
       currentDialogGroup: [], // 当前聊天组的聊天内容
       currentDialogGroupName: "...", // 当前聊天组的名字
       nowName: "", // sessionStorage使用的
@@ -117,8 +117,7 @@ export default {
       }
 
       // 还没写入文件。。。。。。。。。
-      // 要发送到服务端来进行多端同步
-     
+      // 发送到服务端来进行多端同步
       this.sendWebsocket(JSON.stringify(groupData));
 
       // 消息提示
@@ -131,7 +130,7 @@ export default {
     websocket() {
       // 1. 当点击发送按钮的时候给服务端发送请求 √
       // 2. 更新文件里的数据
-      // 3. 把更新完的文件数据再次返回回来
+      // 3. 把更新完的文件数据再次返回回来 √
 
       const ws = new WebSocket("ws://localhost:3000/");
 
@@ -140,35 +139,52 @@ export default {
         // 1. 消息聊天的信息
         // 2. 创建/修改组的的变化
 
-    
         let data = JSON.parse(event.data);
 
         // 如果有图片则是创建群
         if (JSON.parse(event.data).picture) {
-          // 创建群
           console.log("New Group");
-
-          console.log(this.dialogGroupData);
           this.dialogGroupData.push(data);
-
-
         } else {
           // 聊天
+          // 当我再其他群聊的时候，另外一个再哪个群就会添加到哪个群（要筛选加判断）
+
           console.log("dialog");
+          //   console.log(this.currentDialogGroupName);
 
+          // 如果一边再尻村一边再538
+          // 在尻村的则就直接添加进数据
+          // 在538的则就直接添加进总数据
+          if (this.currentDialogGroupName != data.groupName) {
+            // console.log(this.dialogGroupData);
+            let currentIndex = "";
+            this.dialogGroupData.forEach((item, index) => {
+              item.groupName === data.groupName ? (currentIndex = index) : null;
+            });
+            // console.log(currentIndex);
+            delete data.groupName;
+
+            console.log(this.dialogGroupData[currentIndex]);
+
+            this.dialogGroupData[currentIndex].data.push({
+              name: data.name,
+              dialog: data.dialog,
+            });
+
+            return;
+          }
+
+          // 删除组名，并且添加进当前聊天数组
           delete data.groupName;
-
           this.currentDialogGroup.push({
             name: data.name,
             dialog: data.dialog,
           });
-
-          this.$refs.dialog.scrollTo(0, 10000000);
         }
       };
     },
+    // 发送信息给服务端
     sendWebsocket(data) {
-      // 发送信息给服务端
       const ws = new WebSocket("ws://localhost:3000/");
       ws.onopen = () => {
         ws.send(data);
@@ -181,6 +197,8 @@ export default {
     fetch("http://localhost:3000/dialogData")
       .then((data) => data.json())
       .then((data) => {
+        this.$store.commit("setAllData", data);
+
         this.dialogGroupData = data;
       });
     this.nowName = sessionStorage.getItem("nowName");
@@ -189,8 +207,9 @@ export default {
   // 生命周期，组件已初始化完成
   mounted() {
     this.websocket();
+    console.log();
   },
-  
+
   //  自定义指令
   directives: {
     // 给初始化时，自动选择第一个聊天组

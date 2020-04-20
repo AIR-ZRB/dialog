@@ -72,10 +72,7 @@ wss.on("connection", function (ws) {
         webSocket() {
             var ws = new WebSocket("ws://localhost:3000/ws/chat");
             let _this = this;
-            // ws.onopen = () => {
-            //     // 点击发送按钮，将文本框的信息发送服务端
-            //     ws.send(_this.data);
-            // };
+
             ws.onmessage = function(event) {
                 console.log(event);
                 _this.message.push(event.data);
