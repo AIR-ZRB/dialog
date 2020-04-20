@@ -13,7 +13,7 @@
       <div class="dialogGroup">
         <dialogGroup
           v-for="(item, index) in dialogGroupData"
-          :key="item.picture"
+          :key="item.picture + index"
           :picture="item.picture"
           :lastDialog="item.lastDialog"
           :groupName="item.groupName"
@@ -58,8 +58,8 @@
         </p>
         <div class="dialog" ref="dialog">
           <dialogMessage
-            v-for="item in currentDialogGroup"
-            :key="item.dialog"
+            v-for="(item, index) in currentDialogGroup"
+            :key="item.dialog + index"
             :name="item.name"
             :dialog="item.dialog"
             :nowName="nowName"
@@ -150,36 +150,29 @@ export default {
           // 当我再其他群聊的时候，另外一个再哪个群就会添加到哪个群（要筛选加判断）
 
           console.log("dialog");
-          //   console.log(this.currentDialogGroupName);
 
           // 如果一边再尻村一边再538
           // 在尻村的则就直接添加进数据
           // 在538的则就直接添加进总数据
+
+          // 引用类型
+          let newData = JSON.parse(JSON.stringify(data));
+          delete newData.groupName;
+          console.log(newData);
+
           if (this.currentDialogGroupName != data.groupName) {
-            // console.log(this.dialogGroupData);
             let currentIndex = "";
             this.dialogGroupData.forEach((item, index) => {
               item.groupName === data.groupName ? (currentIndex = index) : null;
             });
-            // console.log(currentIndex);
-            delete data.groupName;
 
-            console.log(this.dialogGroupData[currentIndex]);
-
-            this.dialogGroupData[currentIndex].data.push({
-              name: data.name,
-              dialog: data.dialog,
-            });
+            this.dialogGroupData[currentIndex].data.push(newData);
 
             return;
           }
+          // 并且添加进当前聊天数组
 
-          // 删除组名，并且添加进当前聊天数组
-          delete data.groupName;
-          this.currentDialogGroup.push({
-            name: data.name,
-            dialog: data.dialog,
-          });
+          this.currentDialogGroup.push(newData);
         }
       };
     },
@@ -197,8 +190,6 @@ export default {
     fetch("http://localhost:3000/dialogData")
       .then((data) => data.json())
       .then((data) => {
-        this.$store.commit("setAllData", data);
-
         this.dialogGroupData = data;
       });
     this.nowName = sessionStorage.getItem("nowName");

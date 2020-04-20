@@ -1,16 +1,15 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Vuex from "vuex";
+
 
 Vue.use(VueRouter);
-Vue.use(Vuex);
+
 
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 Vue.use(ElementUI);
 
-import UUID from "vue-uuid";
-Vue.use(UUID);
+
 
 Vue.config.productionTip = true;
 
@@ -35,27 +34,9 @@ const router = new VueRouter({
   ],
 });
 
-const store = new Vuex.Store({
-  state: {
-    allData: [],
-    currentGroupName: "",
-    currentDialogGroup: [],
-  },
-  mutations: {
-    setAllData(state, data) {
-      state.allData = data;
-    },
-    setCurrentGroupName(state, data) {
-      state.currentGroupName = data;
-    },
-    setCurrentDialogGroup(state, data) {
-      state.currentDialogGroup = data;
-    },
-  },
-});
+
 
 new Vue({
   router,
-  store,
   render: (h) => h(App),
 }).$mount("#app");
