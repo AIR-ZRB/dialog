@@ -27,7 +27,7 @@
           class="addGroup"
           @click="
             () => {
-              this.editGroupShow = true;
+              this.addGroupShow = true;
             }
           "
         >
@@ -73,7 +73,12 @@
       </div>
     </div>
 
-    <editGroup v-show="editGroupShow" @submitData="submitData" />
+    <editGroup v-if="addGroupShow" @submitData="submitData" />
+    <editGroup
+      v-if="editGroupShow"
+      @submitData="submitEditGroup"
+      :editData="currentGroup"
+    />
   </div>
 </template>
 
@@ -82,34 +87,45 @@ export default {
   data() {
     return {
       dialogGroupData: [], // 所有聊天数据
+      currentGroup: [],
       currentDialogGroup: [], // 当前聊天组的聊天内容
       currentDialogGroupName: "...", // 当前聊天组的名字
       nowName: "", // sessionStorage使用的
       sendMessage: "", // 即将发送的信息d
+      addGroupShow: false,
       editGroupShow: false,
     };
   },
   methods: {
     // 从子组件获取一些数据
     parentFunction(data) {
+      this.currentGroup = data;
       this.currentDialogGroup = data.data;
       this.currentDialogGroupName = data.groupName;
     },
 
     // 点击发送按钮，发送信息
     outputMessage() {
-      this.sendWebsocket(
-        JSON.stringify({
-          groupName: this.currentDialogGroupName,
-          name: this.nowName,
-          dialog: this.sendMessage,
-        })
-      );
+      this.sendWebsocket({
+        groupName: this.currentDialogGroupName,
+        name: this.nowName,
+        dialog: this.sendMessage,
+      });
+    },
+
+    submitEditGroup(groupData) {
+      // cancel的情况，直接退出
+      this.editGroupShow = false;
+      if (!groupData) {
+        return;
+      }
+      this.editGroupShow = false;
+      this.sendWebsocket(groupData);
     },
 
     // 创建群聊
     submitData(groupData) {
-      this.editGroupShow = false;
+      this.addGroupShow = false;
 
       // cancel的情况，直接退出
       if (!groupData) {
@@ -117,16 +133,68 @@ export default {
       }
 
       // 还没写入文件。。。。。。。。。
+
       // 发送到服务端来进行多端同步
-      this.sendWebsocket(JSON.stringify(groupData));
+      this.sendWebsocket(groupData);
 
       // 消息提示
       const h = this.$createElement;
       this.$notify({
-        title: "标题名称",
+        title: "新建群成功",
         message: h("i", { style: "color: teal" }, "添加成功"),
       });
     },
+    // websocket的一些函数
+    // 添加组
+    addGroup(data) {
+      console.log("New Group");
+
+      this.dialogGroupData.push(data);
+    },
+    // 在不同群聊时过滤消息，添加消息
+    filterMessage(data) {
+      // 聊天
+      // 当我再其他群聊的时候，另外一个再哪个群就会添加到哪个群（要筛选加判断）
+
+      console.log("dialog");
+
+      // 引用类型
+      let newData = JSON.parse(JSON.stringify(data));
+      delete newData.groupName;
+
+      if (this.currentDialogGroupName != data.groupName) {
+        let currentIndex = "";
+
+        this.dialogGroupData.forEach((item, index) => {
+          item.groupName === data.groupName ? (currentIndex = index) : null;
+        });
+
+        this.dialogGroupData[currentIndex].data.push(newData);
+
+        return;
+      }
+      // 并且添加进当前聊天数组
+
+      this.currentDialogGroup.push(newData);
+    },
+    // 修改群(BUG)
+    eidtGroup(data) {
+      console.log("Edit Group");
+
+      let currentIndex = "";
+
+      // 如果一边的索引在0，一遍的索引在1，则0会修改另一边的0
+      this.dialogGroupData.forEach((item, index) => {
+        item.groupName === this.currentGroup.groupName
+          ? (currentIndex = index)
+          : null;
+      });
+
+      this.dialogGroupData[currentIndex] = data;
+      console.log(currentIndex);
+      this.dialogGroupData = JSON.parse(JSON.stringify(this.dialogGroupData));
+    },
+
     websocket() {
       // 1. 当点击发送按钮的时候给服务端发送请求 √
       // 2. 更新文件里的数据
@@ -135,52 +203,27 @@ export default {
       const ws = new WebSocket("ws://localhost:3000/");
 
       ws.onmessage = (event) => {
-        // 接收信息
-        // 1. 消息聊天的信息
-        // 2. 创建/修改组的的变化
-
         let data = JSON.parse(event.data);
 
-        // 如果有图片则是创建群
-        if (JSON.parse(event.data).picture) {
-          console.log("New Group");
-          this.dialogGroupData.push(data);
-        } else {
-          // 聊天
-          // 当我再其他群聊的时候，另外一个再哪个群就会添加到哪个群（要筛选加判断）
-
-          console.log("dialog");
-
-          // 如果一边再尻村一边再538
-          // 在尻村的则就直接添加进数据
-          // 在538的则就直接添加进总数据
-
-          // 引用类型
-          let newData = JSON.parse(JSON.stringify(data));
-          delete newData.groupName;
-          console.log(newData);
-
-          if (this.currentDialogGroupName != data.groupName) {
-            let currentIndex = "";
-            this.dialogGroupData.forEach((item, index) => {
-              item.groupName === data.groupName ? (currentIndex = index) : null;
-            });
-
-            this.dialogGroupData[currentIndex].data.push(newData);
-
-            return;
-          }
-          // 并且添加进当前聊天数组
-
-          this.currentDialogGroup.push(newData);
+        switch (data.state) {
+          case "new":
+            this.addGroup(data);
+            break;
+          case "edit":
+            this.editGroupShow(data);
+            break;
+          default:
+            this.filterMessage(data);
+            break;
         }
+
       };
     },
     // 发送信息给服务端
     sendWebsocket(data) {
       const ws = new WebSocket("ws://localhost:3000/");
       ws.onopen = () => {
-        ws.send(data);
+        ws.send(JSON.stringify(data));
       };
     },
   },
@@ -198,7 +241,6 @@ export default {
   // 生命周期，组件已初始化完成
   mounted() {
     this.websocket();
-    console.log();
   },
 
   //  自定义指令

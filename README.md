@@ -13,7 +13,6 @@
 + vue
 + koa或者express都可以
 + ws
-+ uuid(还没使用)
 
 ## 要点
 
