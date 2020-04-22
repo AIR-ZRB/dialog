@@ -185,16 +185,18 @@ export default {
     eidtGroup(data) {
       console.log("Edit Group");
 
-      console.log(this.editGroupIndex);
-
       let currentIndex = "";
 
       // 如果一边的索引在0，一遍的索引在1，则0会修改另一边的1
       this.dialogGroupData.forEach((item, index) => {
         item.groupName === this.editGroupIndex ? (currentIndex = index) : null;
       });
+      
 
+      console.log(this.dialogGroupData[currentIndex].data)
+      data.data = this.dialogGroupData[currentIndex].data;
       this.dialogGroupData[currentIndex] = data;
+      
       console.log(currentIndex);
       this.dialogGroupData = JSON.parse(JSON.stringify(this.dialogGroupData));
     },
