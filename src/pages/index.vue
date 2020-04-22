@@ -43,6 +43,9 @@
             @click="
               () => {
                 this.editGroupShow = true;
+                this.sendWebsocket({
+                  nowEditGroup: this.currentDialogGroupName,
+                });
               }
             "
           >
@@ -94,6 +97,7 @@ export default {
       sendMessage: "", // 即将发送的信息d
       addGroupShow: false,
       editGroupShow: false,
+      editGroupIndex: "",
     };
   },
   methods: {
@@ -181,13 +185,13 @@ export default {
     eidtGroup(data) {
       console.log("Edit Group");
 
+      console.log(this.editGroupIndex);
+
       let currentIndex = "";
 
-      // 如果一边的索引在0，一遍的索引在1，则0会修改另一边的0
+      // 如果一边的索引在0，一遍的索引在1，则0会修改另一边的1
       this.dialogGroupData.forEach((item, index) => {
-        item.groupName === this.currentGroup.groupName
-          ? (currentIndex = index)
-          : null;
+        item.groupName === this.editGroupIndex ? (currentIndex = index) : null;
       });
 
       this.dialogGroupData[currentIndex] = data;
@@ -204,19 +208,25 @@ export default {
 
       ws.onmessage = (event) => {
         let data = JSON.parse(event.data);
+        console.log(data);
+
+        if (data.nowEditGroup) {
+          this.editGroupIndex = data.nowEditGroup;
+          return;
+
+        }
 
         switch (data.state) {
           case "new":
             this.addGroup(data);
             break;
           case "edit":
-            this.editGroupShow(data);
+            this.eidtGroup(data);
             break;
           default:
             this.filterMessage(data);
             break;
         }
-
       };
     },
     // 发送信息给服务端
