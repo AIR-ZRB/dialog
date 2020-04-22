@@ -1,14 +1,1 @@
-[
-    {
-        "id": "青空",
-        "password": "zhu123"
-    },
-    {
-        "id": "水无月一见",
-        "password": "zhu123"
-    },
-    {
-        "id": "白鸟留依",
-        "password": "zhu123"
-    }
-]
+[{"id":"青空","password":"zhu123"},{"id":"白鸟留依","password":"zhu123"}]

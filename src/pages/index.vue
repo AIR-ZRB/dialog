@@ -116,9 +116,8 @@ export default {
         dialog: this.sendMessage,
       });
     },
-
+    // cancel的情况，直接退出
     submitEditGroup(groupData) {
-      // cancel的情况，直接退出
       this.editGroupShow = false;
       if (!groupData) {
         return;
@@ -126,7 +125,6 @@ export default {
       this.editGroupShow = false;
       this.sendWebsocket(groupData);
     },
-
     // 创建群聊
     submitData(groupData) {
       this.addGroupShow = false;
@@ -140,18 +138,34 @@ export default {
 
       // 发送到服务端来进行多端同步
       this.sendWebsocket(groupData);
-
-      // 消息提示
-      const h = this.$createElement;
-      this.$notify({
-        title: "新建群成功",
-        message: h("i", { style: "color: teal" }, "添加成功"),
-      });
     },
     // websocket的一些函数
     // 添加组
     addGroup(data) {
       console.log("New Group");
+      let flag = "";
+
+      this.dialogGroupData.forEach((item) => {
+        if (item.groupName === data.groupName) {
+          flag = true;
+          return;
+        }
+      });
+
+      // 消息提示
+      if (flag) {
+        this.$notify.error({
+          title: "错误",
+          message: "群组已存在",
+        });
+        return;
+      }
+
+      this.$notify({
+        title: "成功",
+        message: "这是一条成功的提示消息",
+        type: "success",
+      });
 
       this.dialogGroupData.push(data);
     },
@@ -179,33 +193,35 @@ export default {
       }
       // 并且添加进当前聊天数组
 
-      this.currentDialogGroup.push(newData);
+      let goBottom = new Promise((reject) => {
+        reject();
+      });
+
+      goBottom
+        .then(() => {
+          this.currentDialogGroup.push(newData);
+        })
+        .then(() => {
+          this.$refs.dialog.scrollTo(0, 10000);
+        });
     },
-    // 修改群(BUG)
+    // 修改群
     eidtGroup(data) {
       console.log("Edit Group");
 
       let currentIndex = "";
 
-      // 如果一边的索引在0，一遍的索引在1，则0会修改另一边的1
       this.dialogGroupData.forEach((item, index) => {
         item.groupName === this.editGroupIndex ? (currentIndex = index) : null;
       });
-      
 
-      console.log(this.dialogGroupData[currentIndex].data)
       data.data = this.dialogGroupData[currentIndex].data;
       this.dialogGroupData[currentIndex] = data;
-      
-      console.log(currentIndex);
+
       this.dialogGroupData = JSON.parse(JSON.stringify(this.dialogGroupData));
     },
-
+    // 处理消息的响应
     websocket() {
-      // 1. 当点击发送按钮的时候给服务端发送请求 √
-      // 2. 更新文件里的数据
-      // 3. 把更新完的文件数据再次返回回来 √
-
       const ws = new WebSocket("ws://localhost:3000/");
 
       ws.onmessage = (event) => {
@@ -215,7 +231,6 @@ export default {
         if (data.nowEditGroup) {
           this.editGroupIndex = data.nowEditGroup;
           return;
-
         }
 
         switch (data.state) {

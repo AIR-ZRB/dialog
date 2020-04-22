@@ -118,29 +118,29 @@ wss.on('connection', function (ws) {
 
         // 这里优化，不应该每次都写入
         // 每次写入会导致消息有时不会同步
-        _readFile(dialogData)
-            .then((data) => {
-                let addCurrentData = data.filter(item => item.groupName === mess.groupName);
-                let addIndex = 0;
+        // _readFile(dialogData)
+        //     .then((data) => {
+        //         let addCurrentData = data.filter(item => item.groupName === mess.groupName);
+        //         let addIndex = 0;
                 
-                data.forEach((item, index) => {
-                    if (item.groupName === mess.groupName) {
-                        addIndex = index;
-                    }
-                })
+        //         data.forEach((item, index) => {
+        //             if (item.groupName === mess.groupName) {
+        //                 addIndex = index;
+        //             }
+        //         })
 
-                delete mess.groupName;
-                data[addIndex].data.push(mess);
+        //         delete mess.groupName;
+        //         data[addIndex].data.push(mess);
                 
 
-                console.log(data);
+        //         console.log(data);
 
 
-                return data;
-            })
-            .then((data) => {
-                // _writeFile(dialogData, data)
-            })
+        //         return data;
+        //     })
+        //     .then((data) => {
+        //         // _writeFile(dialogData, data)
+        //     })
 
 
         // 这里是返回给前端的数据
