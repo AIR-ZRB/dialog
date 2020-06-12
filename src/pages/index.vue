@@ -367,23 +367,29 @@ header span {
     cursor: pointer;
 }
 
+
 .currentDialog p {
     font-size: 24px;
     padding: 10px 20px;
     border-bottom: 1px solid #ccc;
+    position: relative;
 }
 
+$currentDialogTitleHeight: 150px;
 .currentDialog .inputDialog {
     width: 100%;
-    height: 150px;
+    height: $currentDialogTitleHeight;
     border-top: 1px solid #ccc;
     bottom: 0;
     position: absolute;
 }
 .currentDialog .dialog {
     padding: 10px;
+    width: 100%;
     overflow-y: scroll;
-    height: 450px;
+    position: absolute;  
+    top: 52px;
+    bottom: $currentDialogTitleHeight;
 }
 
 .inputDialog .inputBox {
