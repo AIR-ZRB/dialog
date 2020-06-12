@@ -217,6 +217,7 @@ export default {
 
       data.data = this.dialogGroupData[currentIndex].data;
       this.dialogGroupData[currentIndex] = data;
+      this.currentDialogGroupName = this.dialogGroupData[currentIndex].groupName
 
       this.dialogGroupData = JSON.parse(JSON.stringify(this.dialogGroupData));
     },
@@ -291,13 +292,10 @@ p {
 $theme: red;
 
 .dialogBox {
-  width: 80%;
-  height: 80%;
-  min-width: 900px;
-  margin: 100px auto 0;
-  border-radius: 10px;
   overflow: hidden;
   border: 1px solid #ccc;
+  height: 100%;
+  min-width: 1000px;
 }
 
 header {
@@ -331,7 +329,8 @@ header span {
 .dialogGroup {
   position: relative;
   height: 100%;
-  /* background: red; */
+  min-width: 300px;
+  overflow: hidden;
 }
 
 .dialogGroup .addGroup {
@@ -352,7 +351,6 @@ header span {
 .currentDialog {
   height: 100%;
   border-left: 1px solid #ccc;
-  /* background: purple; */
   position: relative;
 }
 

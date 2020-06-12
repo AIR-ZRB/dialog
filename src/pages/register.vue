@@ -50,9 +50,7 @@ export default {
             
         },
         nowName(){
-
             sessionStorage.setItem("nowName",this.name);
-            // localStorage.setItem("nowName",this.name)
         }
     },
 
