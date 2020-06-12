@@ -1,5 +1,7 @@
 <template>
   <div class="dialogBox">
+
+    <!-- 顶部栏 -->
     <header>
       <img
         src="https://pic4.zhimg.com/80/v2-bfdf1bf48988291c43ab3c1ed1d02526_720w.jpg"
@@ -8,6 +10,9 @@
       />
       <span>{{ nowName }}</span>
     </header>
+
+
+
     <!-- 聊天组 -->
     <div class="center">
       <div class="dialogGroup">
@@ -75,6 +80,10 @@
         </div>
       </div>
     </div>
+
+   
+
+
 
     <editGroup v-if="addGroupShow" @submitData="submitData" />
     <editGroup
@@ -294,8 +303,10 @@ $theme: red;
 .dialogBox {
   overflow: hidden;
   border: 1px solid #ccc;
+  width: 100%;
   height: 100%;
-  min-width: 1000px;
+  padding-right: 200px;
+  min-width: 1200px;
 }
 
 header {
@@ -401,4 +412,6 @@ header span {
   right: 10px;
   outline: none;
 }
+
+
 </style>

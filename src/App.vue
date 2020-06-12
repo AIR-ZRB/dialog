@@ -1,14 +1,36 @@
 <template>
     <div id="app">
         <router-view />
+
+        <!-- 当前在线人数 -->
+        <div class="right-onLine">
+            <h2>当前在线</h2>
+            <ul>
+                <li v-for="(item,index) in onLine" :key="item.name + index">
+                    <span :style="{background: item.picture}"></span>
+                    <span>{{item.name}}</span>
+                </li>
+            </ul>
+            
+        </div>
     </div>
 </template>
 
 <script>
-export default {};
+export default {
+    data(){
+        return {
+            onLine: [
+                {name: "青空",picture: "blue"},
+                {name: "路人A",picture: "red"},
+                {name: "路人B",picture: "orange"}
+            ]
+        }
+    }
+};
 </script>
 
-<style>
+<style lang="scss">
 * {
     margin: 0;
     padding: 0;
@@ -24,7 +46,10 @@ body {
 #app {
     width: 100%;
     height: 100%;
-	overflow: hidden;
+    min-width: 1400px;
+    overflow: hidden;
+    display: flex;
+
 }
 
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
@@ -33,11 +58,39 @@ body {
     height: 1px; /*!*滚动条高度*!*/
 }
 
-
 /*定义滑块 内阴影 + 圆角*/
 ::-webkit-scrollbar-thumb {
     border-radius: 99px; /*滚动条的圆角*/
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     background-color: skyblue; /*!*滚动条的背景颜色*!*/
+}
+
+
+
+@media (max-width: 1400px){
+    .right-onLine {
+        display: none;
+    }
+}
+
+.right-onLine {
+  width: 200px;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  height: 100%;
+
+
+  li {list-style: none;}
+    border: 1px solid #000;
+    line-height: 30px;
+    span:first-child {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 10px;
+
+    }
 }
 </style>
