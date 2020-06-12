@@ -1,5 +1,6 @@
 <template>
-  <div class="addGroup" @click="cancelEdit" v-show="_props.editGroupShow ">
+  <!-- <div class="addGroup" @click="cancelEdit" v-show="_props.editGroupShow "> -->
+  <div class="addGroup" @click="cancelEdit" >
     <div class="addGroupBox">
       <img :src="picture" alt="" width="100" height="100" class="picture" />
       <section>

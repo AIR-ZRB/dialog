@@ -27,7 +27,7 @@
                     :currentDialogGroupName.sync="currentDialogGroupName"
                 ></dialogGroup>
 
-                <div class="addGroup"  @click="() => (this.editGroupShow = true)">
+                <div class="addGroup" @click="() => (this.addGroupShow = true)">
                     +
                 </div>
             </div>
@@ -60,13 +60,15 @@
 
                 <!-- 所有人发的聊天信息渲染 -->
                 <div class="dialog" ref="dialog">
-                    <dialogMessage
-                        v-for="(item, index) in currentDialogGroup"
-                        :key="item.dialog + index"
-                        :name="item.name"
-                        :dialog="item.dialog"
-                        :nowName="nowName"
-                    />
+                    <transition-group name="fade-message" mode="out-in">
+                        <dialogMessage
+                            v-for="(item, index) in currentDialogGroup"
+                            :key="item.dialog + index"
+                            :name="item.name"
+                            :dialog="item.dialog"
+                            :nowName="nowName"
+                        />
+                    </transition-group>
                 </div>
 
                 <!-- 消息输入区域 -->
@@ -80,10 +82,15 @@
 
         <!-- 如何让add和edit共用一个组件 -->
         <editGroup v-if="addGroupShow" @submitData="submitData" />
-        <editGroup
+        <!-- <editGroup
             @submitData="submitEditGroup"
             :editData="currentGroup"
             :editGroupShow.sync="editGroupShow"
+        /> -->
+        <editGroup
+            @submitData="submitEditGroup"
+            :editData="currentGroup"
+            v-if="editGroupShow"
         />
     </div>
 </template>
@@ -139,17 +146,11 @@ export default {
         },
         // 添加组
         addGroup(data) {
-            // console.log("New Group");
-            let flag = "";
-
-            this.dialogGroupData.forEach((item) => {
-                if (item.groupName === data.groupName) {
-                    flag = true;
-                    return;
-                }
+            let flag = this.dialogGroupData.some((item) => {
+                return item.groupName === data.groupName;
             });
 
-            // 消息提示
+            // 如果相同的组名，则提示
             if (flag) {
                 this.$notify.error({
                     title: "错误",
@@ -163,50 +164,34 @@ export default {
                 message: "这是一条成功的提示消息",
                 type: "success",
             });
-
             this.dialogGroupData.push(data);
         },
         // 在不同群聊时过滤消息，添加消息
         filterMessage(data) {
             // 聊天
-            // 当我再其他群聊的时候，另外一个再哪个群就会添加到哪个群（要筛选加判断）
 
-            // console.log("dialog");
-
-            // 引用类型
+            // 深拷贝
             let newData = JSON.parse(JSON.stringify(data));
             delete newData.groupName;
 
             if (this.currentDialogGroupName != data.groupName) {
-                let currentIndex = "";
-
-                this.dialogGroupData.forEach((item, index) => {
-                    item.groupName === data.groupName
-                        ? (currentIndex = index)
-                        : null;
+                let currentIndex = this.dialogGroupData.findIndex((item) => {
+                    return item.groupName === data.groupName;
                 });
 
                 this.dialogGroupData[currentIndex].data.push(newData);
-
                 return;
             }
             // 并且添加进当前聊天数组
-
-            let goBottom = new Promise((reject) => {
-                reject();
-            });
-
-            goBottom
-                .then(() => {
-                    this.currentDialogGroup.push(newData);
-                })
-                .then(() => {
-                    this.$refs.dialog.scrollTo(0, 10000);
-                });
+            let goBottom = () => {
+                this.currentDialogGroup.push(newData);
+                return new Promise((reject) => reject());
+            };
+            goBottom().then(() => this.$refs.dialog.scrollTo(0, 100000));
         },
         // 修改群
         eidtGroup(data) {
-            // console.log("Edit Group");
+            console.log("Edit Group");
 
             let currentIndex = "";
 
@@ -367,7 +352,6 @@ header span {
     cursor: pointer;
 }
 
-
 .currentDialog p {
     font-size: 24px;
     padding: 10px 20px;
@@ -387,7 +371,7 @@ $currentDialogTitleHeight: 150px;
     padding: 10px;
     width: 100%;
     overflow-y: scroll;
-    position: absolute;  
+    position: absolute;
     top: 52px;
     bottom: $currentDialogTitleHeight;
 }
@@ -413,5 +397,20 @@ $currentDialogTitleHeight: 150px;
     bottom: 10px;
     right: 10px;
     outline: none;
+}
+
+.fade-message-enter,
+.fade-message-leave-to {
+    opacity: 0;
+}
+
+.fade-message-enter-to,
+.fade-message-leave {
+    opacity: 1;
+}
+
+.fade-message-enter-active,
+.fade-message-leave-active {
+    transition: all 0.3s;
 }
 </style>
