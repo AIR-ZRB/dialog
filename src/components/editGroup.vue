@@ -70,6 +70,7 @@ export default {
       }
 
       GroupData.state = "new";
+      // -------------------------------
       this.$emit("submitData", GroupData);
     },
     cancelEdit() {

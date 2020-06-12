@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <router-view />
+        <router-view :onLine.sync="onLine" />
 
         <!-- 当前在线人数 -->
         <div class="right-onLine">

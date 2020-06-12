@@ -3,7 +3,8 @@
         <img :src="_props.picture" alt class="GroupPhoto" />
         <div class="message">
             <p>{{_props.groupName}}</p>
-            <p>{{_props.lastDialog}}</p>
+            <!-- <p>{{_props.lastDialog}}</p> -->
+            <p></p>
         </div>
     </div>
 </template>
@@ -16,8 +17,11 @@ export default {
     methods: {
         giveParentMessage() {
             // 给父组件传值的
-            this.$emit("givePrantMessage", this._props.allData);
-            
+            this.$emit("update:currentGroup",this._props.allData);
+            this.$emit("update:currentDialogGroup",this._props.allData.data);
+            this.$emit("update:currentDialogGroupName",this._props.allData.groupName);
+
+ 
             let dialogGroupItems = document.getElementsByClassName(
                 "dialogGroupItems"
             );
@@ -30,7 +34,7 @@ export default {
         }
     },
     created() {},
-    props: ["picture", "lastDialog", "groupName", "allData", "index"]
+    props: ["picture", "groupName", "allData", "index"]
 };
 </script>
 
