@@ -1,5 +1,5 @@
 <template>
-  <div class="addGroup" @click="cancelEdit">
+  <div class="addGroup" @click="cancelEdit" v-show="_props.editGroupShow ">
     <div class="addGroupBox">
       <img :src="picture" alt="" width="100" height="100" class="picture" />
       <section>
@@ -44,16 +44,25 @@ export default {
       input: "", // 群名
       picture:
         "https://pic1.zhimg.com/80/v2-0d3a635ba2703360e0aac4afc71e91b2_720w.jpg", // 头像
-      groupMembers: ["青空", "水无月一见", "白鸟留依"], // 群成员
+      groupMembers: ["青空", "路人A", "路人B"], // 群成员
       groupTags: ["交流群", "Vue"], // 群标签
       edit: "创建",
     };
   },
   methods: {
+    // element组件需要
     handleClose(tag) {
       this.groupMembers.splice(this.groupMembers.indexOf(tag), 1);
     },
+    // 传给父组件的
     submitData() {
+
+      console.log("editData------------------")
+      console.log(this._props.editData);
+
+
+
+
       let GroupData = {
         groupName: this.input,
         picture: this.picture,
@@ -88,7 +97,7 @@ export default {
       this.edit = "修改";
     }
   },
-  props: ["editData"],
+  props: ["editData","editGroupShow"],
 };
 </script>
 

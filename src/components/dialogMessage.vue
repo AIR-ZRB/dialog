@@ -38,6 +38,7 @@ export default {
 .dialog {
     padding: 10px 20px;
     background-image: linear-gradient(#66ccff, #ccffff);
+    word-break: break-all;
     float: left;
     border-radius: 10px;
 }

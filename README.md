@@ -113,10 +113,6 @@ wss.on("connection", function (ws) {
 
 
 
-## 最后
-
-
-吐槽一下，ElementUI这个库不是很好用
 
 
 

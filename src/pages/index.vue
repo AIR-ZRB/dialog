@@ -27,21 +27,15 @@
                     :currentDialogGroupName.sync="currentDialogGroupName"
                 ></dialogGroup>
 
-                <div
-                    class="addGroup"
-                    @click="
-                        () => {
-                            this.addGroupShow = true;
-                        }
-                    "
-                >
+                <div class="addGroup"  @click="() => (this.editGroupShow = true)">
                     +
                 </div>
             </div>
             <!-- 发消息 -->
             <div class="currentDialog">
+                <!-- 标题和修改按钮 -->
                 <p class="gourpTitle">
-                    {{ currentDialogGroupName }}
+                    <span>{{ currentDialogGroupName }}</span>
                     <span
                         class="setting"
                         @click="
@@ -63,6 +57,8 @@
                         </el-tooltip>
                     </span>
                 </p>
+
+                <!-- 所有人发的聊天信息渲染 -->
                 <div class="dialog" ref="dialog">
                     <dialogMessage
                         v-for="(item, index) in currentDialogGroup"
@@ -72,6 +68,8 @@
                         :nowName="nowName"
                     />
                 </div>
+
+                <!-- 消息输入区域 -->
                 <div class="inputDialog">
                     <!-- 这个可以优化一下，滚动条太难看 -->
                     <textarea class="inputBox" v-model="sendMessage"></textarea>
@@ -80,11 +78,12 @@
             </div>
         </div>
 
+        <!-- 如何让add和edit共用一个组件 -->
         <editGroup v-if="addGroupShow" @submitData="submitData" />
         <editGroup
-            v-if="editGroupShow"
             @submitData="submitEditGroup"
             :editData="currentGroup"
+            :editGroupShow.sync="editGroupShow"
         />
     </div>
 </template>
@@ -125,27 +124,22 @@ export default {
             if (!groupData) {
                 return;
             }
-            this.editGroupShow = false;
             this.sendWebsocket(groupData);
         },
         // 创建群聊
         submitData(groupData) {
             this.addGroupShow = false;
-
             // cancel的情况，直接退出
             if (!groupData) {
                 return;
             }
 
-            // 还没写入文件。。。。。。。。。
-
             // 发送到服务端来进行多端同步
             this.sendWebsocket(groupData);
         },
-        // websocket的一些函数
         // 添加组
         addGroup(data) {
-            console.log("New Group");
+            // console.log("New Group");
             let flag = "";
 
             this.dialogGroupData.forEach((item) => {
@@ -177,7 +171,7 @@ export default {
             // 聊天
             // 当我再其他群聊的时候，另外一个再哪个群就会添加到哪个群（要筛选加判断）
 
-            console.log("dialog");
+            // console.log("dialog");
 
             // 引用类型
             let newData = JSON.parse(JSON.stringify(data));
@@ -212,7 +206,7 @@ export default {
         },
         // 修改群
         eidtGroup(data) {
-            console.log("Edit Group");
+            // console.log("Edit Group");
 
             let currentIndex = "";
 
@@ -238,8 +232,8 @@ export default {
 
             ws.onmessage = (event) => {
                 let data = JSON.parse(event.data);
-                console.log(data);
-
+                // console.log(data);
+                console.log("触发websocket");
                 if (data.nowEditGroup) {
                     this.editGroupIndex = data.nowEditGroup;
                     return;
