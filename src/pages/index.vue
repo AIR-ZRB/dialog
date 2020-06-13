@@ -4,7 +4,6 @@
         <header>
             <img
                 src="https://pic4.zhimg.com/80/v2-bfdf1bf48988291c43ab3c1ed1d02526_720w.jpg"
-                alt
                 class="photo"
             />
             <span>{{ nowName }}</span>
@@ -27,7 +26,15 @@
                     :currentDialogGroupName.sync="currentDialogGroupName"
                 ></dialogGroup>
 
-                <div class="addGroup" @click="() => (this.addGroupShow = true)">
+                <div
+                    class="addGroup"
+                    @click="
+                        () => {
+                            this.editGroupShow = true;
+                            this.currentState = 'add';
+                        }
+                    "
+                >
                     +
                 </div>
             </div>
@@ -41,6 +48,7 @@
                         @click="
                             () => {
                                 this.editGroupShow = true;
+                                this.currentState = 'edit';
                                 this.sendWebsocket({
                                     nowEditGroup: this.currentDialogGroupName,
                                 });
@@ -81,15 +89,10 @@
         </div>
 
         <!-- 如何让add和edit共用一个组件 -->
-        <editGroup v-if="addGroupShow" @submitData="submitData" />
-        <!-- <editGroup
-            @submitData="submitEditGroup"
-            :editData="currentGroup"
-            :editGroupShow.sync="editGroupShow"
-        /> -->
         <editGroup
-            @submitData="submitEditGroup"
+            @submitData="editGroups"
             :editData="currentGroup"
+            :currentState="currentState"
             v-if="editGroupShow"
         />
     </div>
@@ -111,9 +114,9 @@ export default {
             currentDialogGroupName: "...", // 当前聊天组的名字
             nowName: "", // sessionStorage使用的
             sendMessage: "", // 即将发送的信息
-            addGroupShow: false,
             editGroupShow: false,
             editGroupIndex: "",
+            currentState: "",
         };
     },
     methods: {
@@ -125,25 +128,12 @@ export default {
                 dialog: this.sendMessage,
             });
         },
-        // cancel的情况，直接退出
-        submitEditGroup(groupData) {
+        // 用于判断是新增群还是修改群
+        editGroups(data) {
             this.editGroupShow = false;
-            if (!groupData) {
-                return;
-            }
-            this.sendWebsocket(groupData);
+            data && this.sendWebsocket(data);
         },
-        // 创建群聊
-        submitData(groupData) {
-            this.addGroupShow = false;
-            // cancel的情况，直接退出
-            if (!groupData) {
-                return;
-            }
 
-            // 发送到服务端来进行多端同步
-            this.sendWebsocket(groupData);
-        },
         // 添加组
         addGroup(data) {
             let flag = this.dialogGroupData.some((item) => {
@@ -193,12 +183,8 @@ export default {
         eidtGroup(data) {
             console.log("Edit Group");
 
-            let currentIndex = "";
-
-            this.dialogGroupData.forEach((item, index) => {
-                item.groupName === this.editGroupIndex
-                    ? (currentIndex = index)
-                    : null;
+            let currentIndex = this.dialogGroupData.findIndex((item) => {
+                return item.groupName === this.editGroupIndex;
             });
 
             data.data = this.dialogGroupData[currentIndex].data;
@@ -217,12 +203,13 @@ export default {
 
             ws.onmessage = (event) => {
                 let data = JSON.parse(event.data);
-                // console.log(data);
-                console.log("触发websocket");
+
                 if (data.nowEditGroup) {
                     this.editGroupIndex = data.nowEditGroup;
                     return;
                 }
+
+                console.log("触发websocket");
 
                 switch (data.state) {
                     case "new":
@@ -296,20 +283,20 @@ header {
     height: 80px;
     padding: 0 10px;
     display: flex;
+
+    .photo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin: 10px 20px;
+    }
+    span {
+        font-size: 20px;
+        height: 100%;
+        line-height: 80px;
+    }
 }
 
-header .photo {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    margin: 10px 20px;
-}
-
-header span {
-    font-size: 20px;
-    height: 100%;
-    line-height: 80px;
-}
 .center {
     display: grid;
     width: 100%;
