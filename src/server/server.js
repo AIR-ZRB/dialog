@@ -86,20 +86,18 @@ app.get("/dialogData", (req, res) => {
     });
 });
 
-let currentOnLine = [];
-app.get("/getCurrentOnLine", (req, res) => {
-    console.log("Nodejs");
-    let flag = currentOnLine.some((item) => {
-        return item.name === req.query.name;
-    });
-
-    flag || currentOnLine.push({
-            picture: "blue",
-            name: req.query.name,
+let getCurrentOnLine = (function() {
+    let currentOnLine = [];
+    return function(message) {
+        let flag = currentOnLine.some((item) => {
+            return item.name === message.name;
         });
 
-    res.end(JSON.stringify(currentOnLine));
-});
+        flag || currentOnLine.push(message);
+
+        return currentOnLine;
+    };
+})();
 
 let wsServer = app.listen(3000, () => {
     console.log("running...");
@@ -124,8 +122,9 @@ wss.on("connection", function(ws) {
     // 形参message是从前端接收过来的，前端接收的是什么返回的就是什么
     ws.on("message", function(message) {
         let mess = JSON.parse(message);
-
-        // console.log(message)
+        // console.log(mess);
+        console.log("这里是Message");
+        console.log(message);
 
         // 这里优化，不应该每次都写入
         // 每次写入会导致消息有时不会同步
@@ -152,6 +151,19 @@ wss.on("connection", function(ws) {
         //     })
 
         // 这里是返回给前端的数据
+
+        // mess.state === "onLine"
+        //     ? wss.broadcast(JSON.stringify(getCurrentOnLine(mess)))
+
+        if (mess.state === "onLine") {
+            console.log("yes");
+            console.log(JSON.stringify(getCurrentOnLine(mess)));
+            wss.broadcast(JSON.stringify(getCurrentOnLine(mess)));
+            return;
+        }
+
         wss.broadcast(message);
+
+        // wss.broadcast(message);
     });
 });
