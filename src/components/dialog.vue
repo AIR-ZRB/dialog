@@ -20,7 +20,7 @@ export default {
             this.$emit("update:currentGroup",this._props.allData);
             this.$emit("update:currentDialogGroup",this._props.allData.data);
             this.$emit("update:currentDialogGroupName",this._props.allData.groupName);
-
+            this.$emit("update:editGroupName",this._props.groupName);
  
             let dialogGroupItems = document.getElementsByClassName(
                 "dialogGroupItems"

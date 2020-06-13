@@ -24,16 +24,12 @@
                     :currentGroup.sync="currentGroup"
                     :currentDialogGroup.sync="currentDialogGroup"
                     :currentDialogGroupName.sync="currentDialogGroupName"
+                    :editGroupName.sync="editGroupName"
                 ></dialogGroup>
 
                 <div
                     class="addGroup"
-                    @click="
-                        () => {
-                            this.editGroupShow = true;
-                            this.currentState = 'add';
-                        }
-                    "
+                    @click="() => this.clickActiveGroup('add')"
                 >
                     +
                 </div>
@@ -45,15 +41,7 @@
                     <span>{{ currentDialogGroupName }}</span>
                     <span
                         class="setting"
-                        @click="
-                            () => {
-                                this.editGroupShow = true;
-                                this.currentState = 'edit';
-                                this.sendWebsocket({
-                                    nowEditGroup: this.currentDialogGroupName,
-                                });
-                            }
-                        "
+                        @click="() => this.clickActiveGroup('edit')"
                     >
                         <el-tooltip
                             class="item"
@@ -88,7 +76,7 @@
             </div>
         </div>
 
-        <!-- 如何让add和edit共用一个组件 -->
+        <!-- 修改/添加群使用 -->
         <editGroup
             @submitData="editGroups"
             :editData="currentGroup"
@@ -115,7 +103,7 @@ export default {
             nowName: "", // sessionStorage使用的
             sendMessage: "", // 即将发送的信息
             editGroupShow: false,
-            editGroupIndex: "",
+            editGroupName: "",
             currentState: "",
         };
     },
@@ -129,6 +117,10 @@ export default {
             });
         },
         // 用于判断是新增群还是修改群
+        clickActiveGroup(text) {
+            this.editGroupShow = true;
+            this.currentState = text;
+        },
         editGroups(data) {
             this.editGroupShow = false;
             data && this.sendWebsocket(data);
@@ -172,6 +164,7 @@ export default {
                 this.dialogGroupData[currentIndex].data.push(newData);
                 return;
             }
+
             // 并且添加进当前聊天数组
             let goBottom = () => {
                 this.currentDialogGroup.push(newData);
@@ -184,7 +177,7 @@ export default {
             console.log("Edit Group");
 
             let currentIndex = this.dialogGroupData.findIndex((item) => {
-                return item.groupName === this.editGroupIndex;
+                return item.groupName === this.editGroupName;
             });
 
             data.data = this.dialogGroupData[currentIndex].data;
@@ -203,11 +196,6 @@ export default {
 
             ws.onmessage = (event) => {
                 let data = JSON.parse(event.data);
-
-                if (data.nowEditGroup) {
-                    this.editGroupIndex = data.nowEditGroup;
-                    return;
-                }
 
                 console.log("触发websocket");
 
@@ -246,6 +234,9 @@ export default {
     // 生命周期，组件已初始化完成
     mounted() {
         this.websocket();
+    },
+    updated() {
+        console.log(this.editGroupName);
     },
 
     //  自定义指令
