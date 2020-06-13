@@ -105,6 +105,7 @@ export default {
             editGroupShow: false,
             editGroupName: "",
             currentState: "",
+            testOnLine: [],
         };
     },
     methods: {
@@ -143,7 +144,7 @@ export default {
 
             this.$notify({
                 title: "成功",
-                message: "这是一条成功的提示消息",
+                message: "创建成功",
                 type: "success",
             });
             this.dialogGroupData.push(data);
@@ -190,6 +191,21 @@ export default {
                 JSON.stringify(this.dialogGroupData)
             );
         },
+        // 当前在线
+        currentOnLine() {
+            console.log("onLine");
+            // console.log(data);
+            // data是当前的登录人的信息
+
+            fetch("http://localhost:3000/getCurrentOnLine?name="+this.nowName)
+                .then((data) => data.json())
+                .then((res) => {
+                    console.log(res)
+                    this.$emit("getCurrentOnLine", res);
+                });
+            
+        },
+
         // 处理消息的响应
         websocket() {
             const ws = new WebSocket("ws://localhost:3000/");
@@ -205,6 +221,9 @@ export default {
                         break;
                     case "edit":
                         this.eidtGroup(data);
+                        break;
+                    case "onLine":
+                        this.currentOnLine(data);
                         break;
                     default:
                         this.filterMessage(data);
@@ -229,14 +248,17 @@ export default {
                 this.dialogGroupData = data;
             });
         this.nowName = sessionStorage.getItem("nowName");
+
+        this.sendWebsocket({
+            state: "onLine",
+            name: this.nowName,
+            picture: "blue",
+        });
     },
 
     // 生命周期，组件已初始化完成
     mounted() {
         this.websocket();
-    },
-    updated() {
-        console.log(this.editGroupName);
     },
 
     //  自定义指令

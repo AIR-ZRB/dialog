@@ -1,31 +1,38 @@
 <template>
     <div id="app">
-        <router-view :onLine.sync="onLine" />
+        <router-view
+            :onLine.sync="onLine"
+            @getCurrentOnLine="getCurrentOnLine"
+        />
 
         <!-- 当前在线人数 -->
         <div class="right-onLine">
             <h2>当前在线</h2>
             <ul>
-                <li v-for="(item,index) in onLine" :key="item.name + index">
-                    <span :style="{background: item.picture}"></span>
-                    <span>{{item.name}}</span>
+                <li v-for="item in onLine" :key="item.name">
+                    <span :style="{ background: item.picture }"></span>
+                    <span>{{ item.name }}</span>
                 </li>
             </ul>
-            
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    data(){
+    data() {
         return {
-            onLine: [
-                {name: "青空",picture: "blue"},
-                {name: "路人A",picture: "red"},
-                {name: "路人B",picture: "orange"}
-            ]
-        }
+            onLine: [],
+        };
+    },
+    methods: {
+        getCurrentOnLine(data) {
+            this.onLine = data;
+        },
+    },
+    updated(){
+        console.log("app");
+        console.log(this.onLine)
     }
 };
 </script>
@@ -49,7 +56,6 @@ body {
     min-width: 1400px;
     overflow: hidden;
     display: flex;
-
 }
 
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
@@ -65,23 +71,22 @@ body {
     background-color: skyblue; /*!*滚动条的背景颜色*!*/
 }
 
-
-
-@media (max-width: 1400px){
+@media (max-width: 1400px) {
     .right-onLine {
         display: none;
     }
 }
 
 .right-onLine {
-  width: 200px;
-  padding: 10px;
-  position: absolute;
-  right: 0;
-  height: 100%;
+    width: 200px;
+    padding: 10px;
+    position: absolute;
+    right: 0;
+    height: 100%;
 
-
-  li {list-style: none;}
+    li {
+        list-style: none;
+    }
     border: 1px solid #000;
     line-height: 30px;
     span:first-child {
@@ -90,7 +95,6 @@ body {
         height: 10px;
         border-radius: 50%;
         margin-right: 10px;
-
     }
 }
 </style>
