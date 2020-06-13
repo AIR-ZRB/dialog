@@ -29,9 +29,6 @@ export default {
         getCurrentOnLine(data) {
             this.onLine = data;
         },
-    },
-    created(){
-        console.log(this.$route.fullPath)
     }
 };
 </script>

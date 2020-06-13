@@ -8,6 +8,7 @@ const http = require("http");
 const bodyParser = require("body-parser"); /*post方法*/
 const { RSA_NO_PADDING } = require("constants");
 const { cpuUsage } = require("process");
+const { isRegExp } = require("util");
 app.use(bodyParser.json()); // 添加json解析
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -86,18 +87,21 @@ app.get("/dialogData", (req, res) => {
     });
 });
 
-let getCurrentOnLine = (function() {
-    let currentOnLine = [];
-    return function(message) {
-        let flag = currentOnLine.some((item) => {
-            return item.name === message.name;
-        });
+let currentOnLine = [];
+app.post("/getCurrentOnLine", (req, res) => {
+    console.log(req.body);
 
-        flag || currentOnLine.push(message);
+  
 
-        return currentOnLine;
-    };
-})();
+    let flag = currentOnLine.some((item) => {
+        return item.name === req.body.name;
+    });
+    flag || currentOnLine.push(req.body);
+
+
+    res.end(JSON.stringify(currentOnLine));
+
+});
 
 let wsServer = app.listen(3000, () => {
     console.log("running...");
@@ -123,8 +127,8 @@ wss.on("connection", function(ws) {
     ws.on("message", function(message) {
         let mess = JSON.parse(message);
         // console.log(mess);
-        console.log("这里是Message");
-        console.log(message);
+        // console.log("这里是Message");
+        // console.log(message);
 
         // 这里优化，不应该每次都写入
         // 每次写入会导致消息有时不会同步
@@ -155,15 +159,6 @@ wss.on("connection", function(ws) {
         // mess.state === "onLine"
         //     ? wss.broadcast(JSON.stringify(getCurrentOnLine(mess)))
 
-        if (mess.state === "onLine") {
-            console.log("yes");
-            console.log(JSON.stringify(getCurrentOnLine(mess)));
-            wss.broadcast(JSON.stringify(getCurrentOnLine(mess)));
-            return;
-        }
-
         wss.broadcast(message);
-
-        // wss.broadcast(message);
     });
 });

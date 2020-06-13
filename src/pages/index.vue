@@ -194,9 +194,26 @@ export default {
         // 当前在线
         currentOnLine(data) {
             console.log("onLine");
+            console.log(data);
+            
+
+            // let getOnLine = []
+            fetch("http://localhost:3000/getCurrentOnLine", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+                .then((res) => res.json())
+                .then((res) => {
+                    console.log("req");
+                    console.log(res);
+                    this.$emit("getCurrentOnLine", res)
+                });
 
             // data是当前的登录人的信息
-            this.$emit("getCurrentOnLine", data);
+            // ;
         },
 
         // 处理消息的响应
@@ -206,21 +223,17 @@ export default {
             ws.onmessage = (event) => {
                 let data = JSON.parse(event.data);
 
-                if (Array.isArray(data) && data[0].state === "onLine") {
-                    this.currentOnLine(data);
-                    return;
-                }
-
                 console.log("触发websocket");
                 console.log(data);
                 switch (data.state) {
                     case "new":
-                        console.log("?");
                         this.addGroup(data);
                         break;
                     case "edit":
-                        console.log("???");
                         this.eidtGroup(data);
+                        break;
+                    case "onLine":
+                        this.currentOnLine(data);
                         break;
                     default:
                         this.filterMessage(data);
@@ -251,8 +264,6 @@ export default {
             name: this.nowName,
             picture: "blue",
         });
-
-      
     },
 
     // 生命周期，组件已初始化完成
