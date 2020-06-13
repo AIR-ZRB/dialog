@@ -208,7 +208,7 @@ export default {
 
                 if (Array.isArray(data) && data[0].state === "onLine") {
                     this.currentOnLine(data);
-                    return ;
+                    return;
                 }
 
                 console.log("触发websocket");
@@ -251,13 +251,14 @@ export default {
             name: this.nowName,
             picture: "blue",
         });
+
+      
     },
 
     // 生命周期，组件已初始化完成
     mounted() {
         this.websocket();
     },
-
     //  自定义指令
     directives: {
         // 给初始化时，自动选择第一个聊天组

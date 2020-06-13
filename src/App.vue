@@ -6,7 +6,7 @@
         />
 
         <!-- 当前在线人数 -->
-        <div class="right-onLine">
+        <div class="right-onLine" v-show="this.$route.fullPath === '/index'">
             <h2>当前在线</h2>
             <ul>
                 <li v-for="item in onLine" :key="item.name">
@@ -30,9 +30,8 @@ export default {
             this.onLine = data;
         },
     },
-    updated(){
-        console.log("app");
-        console.log(this.onLine)
+    created(){
+        console.log(this.$route.fullPath)
     }
 };
 </script>
