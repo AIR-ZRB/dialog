@@ -19,11 +19,13 @@ import registerComponent from "./pages/register.vue";
 import indexComponent from "./pages/index.vue";
 
 import dialogComponent from "./components/dialog.vue";
-import dislogMessageComponent from "./components/dialogMessage.vue";
+import information from "./components/information.vue";
 import editGroup from "./components/editGroup.vue";
+import navigation from "./components/navigation.vue";
 
 Vue.component("dialogGroup", dialogComponent);
-Vue.component("dialogMessage", dislogMessageComponent);
+Vue.component("information", information);
+Vue.component("navigation", navigation);
 Vue.component("editGroup", editGroup);
 
 const router = new VueRouter({

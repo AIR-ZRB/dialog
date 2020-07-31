@@ -1,0 +1,26 @@
+* {
+    --theme-color: #28bfbe;
+    --theme-light-color: #eff5f9;
+    --theme-text-color: #ffffff;
+    --theme-icon-color: #cccccc;
+
+    /* 别人说话是的配色 */
+    --theme-dialog-rests-color: #d7e4f4;
+    --theme-dialog-rests-text-color: #97a7b8;
+    /* 自己说话时的配色 */
+    --theme-dialog-oneself-color: #28bfbe;
+    --theme-dialog-oneself-text-color: #ffffff;
+}
+
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar {
+    width: 8px; /*滚动条宽度*/
+    height: 1px; /*!*滚动条高度*!*/
+}
+
+/*定义滑块 内阴影 + 圆角*/
+::-webkit-scrollbar-thumb {
+    border-radius: 99px; /*滚动条的圆角*/
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: var(--theme-color); /*!*滚动条的背景颜色*!*/
+}

@@ -2,7 +2,7 @@
     <div class="dialogBox">
         <!-- 聊天组 -->
         <div class="center">
-            <div class="menus"></div>
+            <navigation @clickActiveGroup="clickActiveGroup" />
 
             <div class="dialogGroup">
                 <div class="dialog-group-menu">
@@ -10,7 +10,7 @@
                     <el-input
                         placeholder="请输入内容"
                         suffix-icon="el-icon-search"
-                        v-model="input1"
+                        v-model="search"
                     />
                     <i class="el-icon-more-outline"></i>
                 </div>
@@ -27,16 +27,10 @@
                     :currentDialogGroup.sync="currentDialogGroup"
                     :currentDialogGroupName.sync="currentDialogGroupName"
                     :editGroupName.sync="editGroupName"
-                ></dialogGroup>
-
-                <div
-                    class="addGroup"
-                    @click="() => this.clickActiveGroup('add')"
-                >
-                    +
-                </div>
+                />
             </div>
             <!-- 发消息 -->
+            <!-- 消息部分可以用插槽 -->
             <div class="currentDialog">
                 <!-- 标题和修改按钮 -->
                 <p class="gourpTitle">
@@ -59,7 +53,7 @@
                 <!-- 所有人发的聊天信息渲染 -->
                 <div class="dialog" ref="dialog">
                     <transition-group name="fade-message" mode="out-in">
-                        <dialogMessage
+                        <information
                             v-for="(item, index) in currentDialogGroup"
                             :key="item.dialog + index"
                             :name="item.name"
@@ -71,8 +65,20 @@
 
                 <!-- 消息输入区域 -->
                 <div class="inputDialog">
-                    <el-input v-model="sendMessage" placeholder="请输入内容"></el-input>
-                    <el-button type="primary"  icon="el-icon-s-promotion" circle @click="outputMessage"></el-button>
+                    <i class="el-icon-paperclip"></i>
+                    <i class="el-icon-picture-outline-round"></i>
+
+                    <el-input
+                        v-model="sendMessage"
+                        placeholder="请输入内容"
+                        @keyup.enter.native="outputMessage"
+                    ></el-input>
+                    <el-button
+                        type="primary"
+                        icon="el-icon-s-promotion"
+                        circle
+                        @click="outputMessage"
+                    ></el-button>
                 </div>
             </div>
         </div>
@@ -97,7 +103,7 @@ export default {
     },
     data() {
         return {
-            input1: "",
+            search: "",
             dialogGroupData: [], // 所有聊天数据
             currentGroup: [],
             currentDialogGroup: [], // 当前聊天组的聊天内容
@@ -279,7 +285,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-$theme-icon-color: #ccc;
+@import url(../assets/base.css);
+$theme-icon-color: var(--theme-icon-color);
+$top-height: 60px;
 .dialogBox {
     overflow: hidden;
     box-shadow: #ccc 0px 0px 20px;
@@ -296,10 +304,6 @@ $theme-icon-color: #ccc;
     grid-template-rows: 100%;
 }
 
-// 最左侧选项栏
-.menus {
-    background: #222;
-}
 
 // 中间聊天组样式
 .dialogGroup {
@@ -310,7 +314,7 @@ $theme-icon-color: #ccc;
 
     .dialog-group-menu {
         width: 100%;
-        height: 50px;
+        height: $top-height;
         padding: 0 10px;
         display: flex;
         align-items: center;
@@ -329,72 +333,59 @@ $theme-icon-color: #ccc;
             }
         }
     }
-
-    .addGroup {
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
-        border-radius: 50%;
-        background: skyblue;
-        position: absolute;
-        bottom: 30px;
-        right: 30px;
-        cursor: pointer;
-        text-align: center;
-        font-size: 28px;
-        color: #fff;
-    }
 }
 
+// 右边区域
 .currentDialog {
     height: 100%;
-    border-left: 1px solid #ccc;
     position: relative;
-    .setting i {
-        float: right;
-        font-weight: 700;
-        cursor: pointer;
+    // 顶部区域
+    .gourpTitle {
+        font-size: 24px;
+        height: $top-height;
+        // line-height: $top-height;
+        padding: 15px 20px;
+
+        position: relative;
+        background: #fff;
+        .setting i {
+            float: right;
+            font-weight: 700;
+            cursor: pointer;
+        }
     }
-}
-
-.currentDialog p {
-    font-size: 24px;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ccc;
-    position: relative;
-}
-
-$currentDialogTitleHeight: 70px;
-
-.currentDialog {
+    // 内容区域
+    .dialog {
+        padding: 10px;
+        width: 100%;
+        overflow-y: scroll;
+        position: absolute;
+        top: $top-height;
+        bottom: $top-height;
+        background: var(--theme-light-color);
+    }
+    // 输入框区域
     .inputDialog {
         width: 100%;
-        height: $currentDialogTitleHeight;
-        border-top: 1px solid #ccc;
+        height: $top-height;
         bottom: 0;
         position: absolute;
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 0 10px;
+        i {
+            font-size: 34px;
+            color: $theme-icon-color;
+        }
         .el-input {
             width: 80%;
-            .el-input__inner {
-               border-radius: 10px;
-            }
         }
         button {
             font-size: 18px;
+            background: var(--theme-color);
         }
     }
-}
-.currentDialog .dialog {
-    padding: 10px;
-    width: 100%;
-    overflow-y: scroll;
-    position: absolute;
-    top: 52px;
-    bottom: $currentDialogTitleHeight;
 }
 
 .fade-message-enter,
