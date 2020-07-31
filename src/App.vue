@@ -12,6 +12,7 @@
                 <li v-for="item in onLine" :key="item.name">
                     <span :style="{ background: item.picture }"></span>
                     <span>{{ item.name }}</span>
+                    
                 </li>
             </ul>
         </div>
