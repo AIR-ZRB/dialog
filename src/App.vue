@@ -12,7 +12,7 @@
                 <li v-for="item in onLine" :key="item.name">
                     <span :style="{ background: item.picture }"></span>
                     <span>{{ item.name }}</span>
-                    
+
                 </li>
             </ul>
         </div>
@@ -30,6 +30,15 @@ export default {
         getCurrentOnLine(data) {
             this.onLine = data;
         },
+    },
+    created(){
+        window.onbeforeunload = function(){
+           alert("???")
+        }
+
+        window.onunload = function(){
+            alert("??????")
+        }
     }
 };
 </script>

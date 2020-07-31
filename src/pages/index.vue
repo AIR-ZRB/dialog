@@ -1,17 +1,19 @@
 <template>
     <div class="dialogBox">
-        <!-- 顶部栏 -->
-        <header>
-            <img
-                src="https://pic4.zhimg.com/80/v2-bfdf1bf48988291c43ab3c1ed1d02526_720w.jpg"
-                class="photo"
-            />
-            <span>{{ nowName }}</span>
-        </header>
-
         <!-- 聊天组 -->
         <div class="center">
+            <div class="menus"></div>
+
             <div class="dialogGroup">
+                <div class="dialog-group-menu">
+                    <i class="el-icon-s-operation"></i>
+                    <el-input
+                        placeholder="请输入内容"
+                        suffix-icon="el-icon-search"
+                        v-model="input1"
+                    />
+                    <i class="el-icon-more-outline"></i>
+                </div>
                 <!-- 左边聊天列表 -->
                 <dialogGroup
                     v-for="(item, index) in dialogGroupData"
@@ -69,9 +71,8 @@
 
                 <!-- 消息输入区域 -->
                 <div class="inputDialog">
-                    <!-- 这个可以优化一下，滚动条太难看 -->
-                    <textarea class="inputBox" v-model="sendMessage"></textarea>
-                    <button @click="outputMessage">发送</button>
+                    <el-input v-model="sendMessage" placeholder="请输入内容"></el-input>
+                    <el-button type="primary"  icon="el-icon-s-promotion" circle @click="outputMessage"></el-button>
                 </div>
             </div>
         </div>
@@ -96,6 +97,7 @@ export default {
     },
     data() {
         return {
+            input1: "",
             dialogGroupData: [], // 所有聊天数据
             currentGroup: [],
             currentDialogGroup: [], // 当前聊天组的聊天内容
@@ -193,7 +195,6 @@ export default {
         },
         // 当前在线
         currentOnLine(data) {
-          
             fetch("http://localhost:3000/getCurrentOnLine", {
                 method: "POST",
                 headers: {
@@ -278,80 +279,82 @@ export default {
 </script>
 
 <style scoped lang="scss">
-p {
-    font-size: 50px;
-}
-$theme: red;
-
+$theme-icon-color: #ccc;
 .dialogBox {
     overflow: hidden;
-    border: 1px solid #ccc;
-    width: 100%;
-    height: 100%;
-    padding-right: 200px;
-    min-width: 1200px;
-}
-
-header {
-    background-image: linear-gradient(to right, #ccffff, #ccccff);
-    width: 100%;
-    height: 80px;
-    padding: 0 10px;
-    display: flex;
-
-    .photo {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        margin: 10px 20px;
-    }
-    span {
-        font-size: 20px;
-        height: 100%;
-        line-height: 80px;
-    }
+    box-shadow: #ccc 0px 0px 20px;
+    width: 1200px;
+    height: 85%;
+    margin: auto;
 }
 
 .center {
     display: grid;
     width: 100%;
-    height: 90%;
-    grid-template-columns: 30% 70%;
+    height: 100%;
+    grid-template-columns: 5% 25% 70%;
     grid-template-rows: 100%;
 }
 
+// 最左侧选项栏
+.menus {
+    background: #222;
+}
+
+// 中间聊天组样式
 .dialogGroup {
     position: relative;
     height: 100%;
     min-width: 300px;
     overflow: hidden;
-}
 
-.dialogGroup .addGroup {
-    width: 60px;
-    height: 60px;
-    line-height: 60px;
-    border-radius: 50%;
-    background: skyblue;
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
-    cursor: pointer;
-    text-align: center;
-    font-size: 28px;
-    color: #fff;
+    .dialog-group-menu {
+        width: 100%;
+        height: 50px;
+        padding: 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .el-input {
+            width: 75%;
+            input {
+                border-radius: 20px;
+            }
+        }
+        i {
+            font-size: 24px;
+            color: $theme-icon-color;
+            &:last-child {
+                transform: rotate(90deg);
+            }
+        }
+    }
+
+    .addGroup {
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        border-radius: 50%;
+        background: skyblue;
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 28px;
+        color: #fff;
+    }
 }
 
 .currentDialog {
     height: 100%;
     border-left: 1px solid #ccc;
     position: relative;
-}
-
-.currentDialog .setting i {
-    float: right;
-    font-weight: 700;
-    cursor: pointer;
+    .setting i {
+        float: right;
+        font-weight: 700;
+        cursor: pointer;
+    }
 }
 
 .currentDialog p {
@@ -361,13 +364,29 @@ header {
     position: relative;
 }
 
-$currentDialogTitleHeight: 150px;
-.currentDialog .inputDialog {
-    width: 100%;
-    height: $currentDialogTitleHeight;
-    border-top: 1px solid #ccc;
-    bottom: 0;
-    position: absolute;
+$currentDialogTitleHeight: 70px;
+
+.currentDialog {
+    .inputDialog {
+        width: 100%;
+        height: $currentDialogTitleHeight;
+        border-top: 1px solid #ccc;
+        bottom: 0;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px;
+        .el-input {
+            width: 80%;
+            .el-input__inner {
+               border-radius: 10px;
+            }
+        }
+        button {
+            font-size: 18px;
+        }
+    }
 }
 .currentDialog .dialog {
     padding: 10px;
@@ -376,29 +395,6 @@ $currentDialogTitleHeight: 150px;
     position: absolute;
     top: 52px;
     bottom: $currentDialogTitleHeight;
-}
-
-.inputDialog .inputBox {
-    width: 100%;
-    height: 75%;
-    padding: 5px;
-    font-size: 20px;
-    border-top: 1px solid #ccc;
-    resize: none;
-    border: 0;
-    outline: none;
-}
-.inputDialog button {
-    width: 70px;
-    height: 25px;
-    line-height: 25px;
-    color: #000;
-    background-image: linear-gradient(to right, #ccffff, #ccccff);
-    border: 0;
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    outline: none;
 }
 
 .fade-message-enter,
