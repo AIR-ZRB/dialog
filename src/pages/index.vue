@@ -193,11 +193,7 @@ export default {
         },
         // 当前在线
         currentOnLine(data) {
-            console.log("onLine");
-            console.log(data);
-            
-
-            // let getOnLine = []
+          
             fetch("http://localhost:3000/getCurrentOnLine", {
                 method: "POST",
                 headers: {
@@ -209,11 +205,8 @@ export default {
                 .then((res) => {
                     console.log("req");
                     console.log(res);
-                    this.$emit("getCurrentOnLine", res)
+                    this.$emit("getCurrentOnLine", res);
                 });
-
-            // data是当前的登录人的信息
-            // ;
         },
 
         // 处理消息的响应
