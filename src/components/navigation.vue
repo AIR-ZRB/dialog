@@ -1,14 +1,22 @@
 <template>
     <nav>
         <div class="menu-list">
-            <i
+            <router-link
                 v-for="(item, index) in listMenu"
                 :key="item.name"
-                :class="[item.icon, item.active == true ? 'heightLight' : '']"
-                :title="item.name"
-                v-iconActive
-                @click="() => iconHeightLight(index)"
-            />
+                :to="item.en"
+            >
+                <i
+                    :class="[
+                        item.icon,
+                        item.active == true ? 'heightLight' : '',
+                    ]"
+                    :title="item.name"
+                    v-iconActive
+                    @click="() => iconHeightLight(index)"
+                />
+            </router-link>
+
             <i class="el-icon-plus" title="添加群" @click="addGroup"></i>
         </div>
     </nav>
@@ -19,10 +27,30 @@ export default {
     data() {
         return {
             listMenu: [
-                { name: "会话", icon: "el-icon-chat-round", active: true },
-                { name: "联系人", icon: "el-icon-user", active: false },
-                { name: "收藏", icon: "el-icon-receiving", active: false },
-                { name: "文件", icon: "el-icon-folder-opened", active: false },
+                {
+                    name: "会话",
+                    en: "dialog",
+                    icon: "el-icon-chat-round",
+                    active: true,
+                },
+                {
+                    name: "联系人",
+                    en: "user",
+                    icon: "el-icon-user",
+                    active: false,
+                },
+                {
+                    name: "收藏",
+                    en: "collect",
+                    icon: "el-icon-receiving",
+                    active: false,
+                },
+                {
+                    name: "文件",
+                    en: "file",
+                    icon: "el-icon-folder-opened",
+                    active: false,
+                },
             ],
         };
     },
@@ -52,7 +80,7 @@ export default {
 nav {
     width: 100%;
     justify-content: center;
-    padding: 20px 0;
+    padding: 10px 0;
 
     .menu-list {
         text-align: center;

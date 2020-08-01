@@ -12,7 +12,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import url(../assets/base.css);
+@import url(../../assets/base.css);
 .dialogMessage,
 .fr {
     overflow: hidden;

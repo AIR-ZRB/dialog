@@ -1,21 +1,6 @@
 <template>
     <div id="app">
-        <router-view
-            :onLine.sync="onLine"
-            @getCurrentOnLine="getCurrentOnLine"
-        />
-
-        <!-- 当前在线人数 -->
-        <!-- <div class="right-onLine" v-show="this.$route.fullPath === '/index'">
-            <h2>当前在线</h2>
-            <ul>
-                <li v-for="item in onLine" :key="item.name">
-                    <span :style="{ background: item.picture }"></span>
-                    <span>{{ item.name }}</span>
-
-                </li>
-            </ul>
-        </div> -->
+        <router-view />
     </div>
 </template>
 
@@ -23,23 +8,25 @@
 export default {
     data() {
         return {
-            onLine: [],
+           
         };
     },
     methods: {
-        getCurrentOnLine(data) {
-            this.onLine = data;
+        async requestUser() {
+            const userMessage = await this.axios.get("/getUser");
+            this.$root.userList = userMessage.data;
         },
     },
-    created(){
-        window.onbeforeunload = function(){
-           alert("???")
-        }
+    created() {
+        window.onbeforeunload = function() {
+            alert("???");
+        };
 
-        window.onunload = function(){
-            alert("??????")
-        }
-    }
+        window.onunload = function() {
+            alert("??????");
+        };
+        this.requestUser();
+    },
 };
 </script>
 
@@ -59,7 +46,7 @@ body {
 #app {
     width: 100%;
     height: 100%;
-    min-width: 1400px;
+    min-width: 1200px;
     overflow: hidden;
     display: flex;
 }

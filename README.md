@@ -109,6 +109,7 @@ wss.on("connection", function (ws) {
 - [] 更新文件里的数据
 - [] 群友过滤  
 - [] 修改BUG
+- [] 添加组功能（坏了）
 
 
 

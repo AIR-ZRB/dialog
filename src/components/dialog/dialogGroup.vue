@@ -4,7 +4,7 @@
         <div class="message">
             <p>{{ _props.groupName }}</p>
             <p>last dialog</p>
-            <!-- <p>{{_props.lastDialog}}</p> -->    
+            <!-- <p>{{_props.lastDialog}}</p> -->
         </div>
     </div>
 </template>
@@ -43,7 +43,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import url(../assets/base.css);
+@import url(../../assets/base.css);
 .lightHeight {
     border-left: 5px solid var(--theme-color);
     background: var(--theme-light-color);
@@ -54,9 +54,7 @@ export default {
     cursor: pointer;
     display: flex;
     align-items: center;
-
     padding: 0 10px;
-
     .GroupPhoto {
         width: 56px;
         height: 56px;
