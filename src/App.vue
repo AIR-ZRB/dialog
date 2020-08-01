@@ -7,13 +7,14 @@
 <script>
 export default {
     data() {
-        return {
-           
-        };
+        return {};
     },
     methods: {
         async requestUser() {
             const userMessage = await this.axios.get("/getUser");
+            userMessage.data.forEach((item) => {
+                item.active = false;
+            });
             this.$root.userList = userMessage.data;
         },
     },

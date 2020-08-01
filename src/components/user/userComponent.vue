@@ -5,8 +5,7 @@
             <userList
                 v-for="item in $root.userList"
                 :key="item.id"
-                :name="item.id"
-                :picture="item.picture"
+                :message="item"
             />
         </div>
         <main>

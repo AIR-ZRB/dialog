@@ -1,15 +1,11 @@
 <template>
-  <div class="file">
-      12341234
-  </div>
+    <div class="file">
+       
+    </div>
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>
 
-<style>
-
-</style>
+<style></style>

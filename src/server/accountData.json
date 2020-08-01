@@ -1,16 +1,19 @@
 [
     {
         "picture": "https://pic2.zhimg.com/80/v2-d2aba0f0e32c3462d74bd1c801a81e79_720w.jpg?source=1940ef5c",
+        "sex": "男",
         "id": "青空",
         "password": "zhu123"
     },
     {
         "picture": "https://pic3.zhimg.com/80/v2-27d85cf61ff7fa59c01ac436b9a8480f_720w.jpg?source=1940ef5c",
+        "sex": "女",
         "id": "白鸟留依",
         "password": "zhu123"
     },
     {
         "picture": "https://pic1.zhimg.com/80/v2-723c976e313553f98e5512320aad159b_720w.jpg?source=1940ef5c",
+        "sex": "女",
         "id": "水无见一月",
         "password": "zhu123"
     }
