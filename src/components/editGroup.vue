@@ -87,7 +87,6 @@ export default {
         },
     },
     created() {
-      console.log(this)
         if (this.editData && this.currentState === "edit") {
             this.input = this._props.editData.groupName;
             this.picture = this._props.editData.picture;

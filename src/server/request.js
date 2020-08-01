@@ -62,8 +62,44 @@ router.get("/getUser", async (req, res) => {
 // 获取聊天的数据
 router.get("/getDialogData", async (req, res) => {
     const data = await _readFile(dialogFile);
-    console.log(data);
-    res.end(JSON.stringify(data));  
+    res.end(JSON.stringify(data));
+});
+
+// 上传图片接口
+router.post("/pictureUpload/*", (req, res) => {
+    const filePath = "./uploads/images/" + req.body.fileName; //路径从app.js级开始找--
+    const base64 = req.body.body.replace(/^data:image\/\w+;base64,/, ""); //去掉图片base64码前面部分data:image/png;base64
+    const dataBuffer = new Buffer(base64, "base64"); //把base64码转成buffer对象，
+    fs.writeFile(filePath, dataBuffer, function(err) {
+        if (err) throw err;
+        console.log("图片上传成功");
+    });
+});
+
+// 获取服务器上的所有图片
+router.get("/getPictureUrl", (req, res) => {
+    const dirPath = path.resolve(__dirname, "uploads", "images");
+    fs.readdir(dirPath, (err, data) => {
+        res.end(JSON.stringify(data));
+    });
+});
+
+// 获取图片准确地址
+router.get("/getPicture/*", (req, res) => {
+    const fileName = req.url.split("/");
+    console.log(req.url)
+    res.sendFile(__dirname + "/uploads/images/" + fileName[fileName.length - 1]);
+});
+
+// 上传文件接口
+router.post("/fileUpload/*", (req, res) => {
+    const filePath = "./uploads/files/" + req.body.fileName; //路径从app.js级开始找--
+    const base64 = req.body.body.replace(/^data:+.\/\w+;base64,/, ""); //去掉图片base64码前面部分data:image/png;base64
+    const dataBuffer = new Buffer(req.body.body, "base64"); //把base64码转成buffer对象，
+    fs.writeFile(filePath, dataBuffer, function(err) {
+        if (err) throw err;
+        console.log("文件上传成功");
+    });
 });
 
 // 当前在线

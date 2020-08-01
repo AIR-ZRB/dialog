@@ -4,7 +4,6 @@
             <h1>Air Dialog</h1>
             <p>让对话更简单:{{register == true ? "登录":"注册"}}</p>
             
-
             <div class="formBox">
                 <!-- 提交链接还没处理 -->
 
@@ -47,7 +46,6 @@ export default {
                 this.$refs.registerBox.style.transform = "rotateY(0deg)";
             }
             this.register = !this.register;
-            
         },
         nowName(){
             sessionStorage.setItem("nowName",this.name);

@@ -7,8 +7,8 @@ const bodyParser = require("body-parser"); /*post方法*/
 const { RSA_NO_PADDING } = require("constants");
 const { cpuUsage } = require("process");
 const { isRegExp } = require("util");
-app.use(bodyParser.json()); // 添加json解析
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '50mb'})); // 添加json解析
+app.use(bodyParser.urlencoded({ limit: '50mb',extended: false }));
 
 // 跨域设置
 let allowCrossDomain = function(req, res, next) {

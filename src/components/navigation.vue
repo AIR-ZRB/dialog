@@ -40,9 +40,9 @@ export default {
                     active: false,
                 },
                 {
-                    name: "收藏",
+                    name: "图库",
                     en: "collect",
-                    icon: "el-icon-receiving",
+                    icon: "el-icon-picture-outline",
                     active: false,
                 },
                 {
