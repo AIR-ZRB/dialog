@@ -4,7 +4,7 @@
         <!-- 标题和修改按钮 -->
         <p class="gourpTitle">
             <span>{{ currentDialogGroupName }}</span>
-            <span class="setting" @click="() => this.clickActiveGroup('edit')">
+            <span class="setting" @click="settingButton">
                 <i class="el-icon-setting item"></i>
             </span>
         </p>
@@ -51,34 +51,17 @@ export default {
             currentGroup: [],
             currentDialogGroup: [], // 当前聊天组的聊天内容
             currentDialogGroupName: "...", // 当前聊天组的名字
+            currentGrouppicture: "", // 当前群头像
             sendMessage: "", // 即将发送的信息
+            dialogGroupData: [],
         };
     },
-    created() {
-        this.nowName = sessionStorage.getItem("nowName");
-        this.websocket();
-        // 发送在线消息
-        this.sendWebsocket({
-            state: "onLine",
-            name: this.nowName,
-            picture: "blue",
-        });
 
-        Bus.$on("currentGroupMessage", (data) => {
-            console.log("BusOn");
-            console.log(data);
-            this.currentGroup = data;
-            this.currentDialogGroup = data.data;
-            this.currentDialogGroupName = data.groupName;
-        });
-    },
     methods: {
-        // 发送信息给服务端
+        // 发送信息给服务端，只要发送，客户端就会即使返回对应的数据
         sendWebsocket(data) {
             const ws = new WebSocket("ws://localhost:3000/");
-            ws.onopen = () => {
-                ws.send(JSON.stringify(data));
-            };
+            ws.onopen = () => ws.send(JSON.stringify(data));
         },
         // 点击发送按钮，发送信息
         outputMessage() {
@@ -88,15 +71,32 @@ export default {
                 dialog: this.sendMessage,
             });
         },
-        // 用于判断是新增群还是修改群
-        clickActiveGroup(text) {
-            Bus.$emit("editGroup",true)
-            this.editGroupShow = true;
-            this.currentState = text;
+        // 修改群按钮
+        settingButton() {
+            Bus.$emit("editGroupData", {
+                currentGroup: this.currentGroup,
+                state: "edit",
+            });
+            this.$emit("update:editGroupShow", true);
         },
-        editGroups(data) {
-            this.editGroupShow = false;
-            data && this.sendWebsocket(data);
+        // 修改完群后返回数据
+        editGroup() {
+            Bus.$on("editGroup", (data) => {
+                data && this.sendWebsocket(data);
+            });
+        },
+        // 通过返回的数据，修改群信息
+        editGroupData(data) {
+            console.log("Edit Group");
+            console.log(data);
+
+            let currentIndex = this.dialogGroupData.findIndex((item) => {
+                return item.groupName === this.currentDialogGroupName;
+            });
+            const alldialogData = this.$root.allDialogGroupData[currentIndex];
+            alldialogData.groupName = data.groupName;
+            alldialogData.picture = data.picture;
+            this.currentDialogGroupName = data.groupName;
         },
 
         // 添加组
@@ -124,12 +124,10 @@ export default {
         // 在不同群聊时过滤消息，添加消息
         filterMessage(data) {
             // 聊天
-
-            // 深拷贝
             let newData = JSON.parse(JSON.stringify(data));
             delete newData.groupName;
-
             if (this.currentDialogGroupName != data.groupName) {
+                console.log(this.dialogGroupData);
                 let currentIndex = this.dialogGroupData.findIndex((item) => {
                     return item.groupName === data.groupName;
                 });
@@ -137,39 +135,11 @@ export default {
                 this.dialogGroupData[currentIndex].data.push(newData);
                 return;
             }
-
             // 并且添加进当前聊天数组
-            let goBottom = () => {
-                this.currentDialogGroup.push(newData);
-                return new Promise((reject) => reject());
-            };
-            goBottom().then(() => this.$refs.dialog.scrollTo(0, 100000));
-        },
-        // 修改群
-        eidtGroup(data) {
-            console.log("Edit Group");
-
-            let currentIndex = this.dialogGroupData.findIndex((item) => {
-                return item.groupName === this.editGroupName;
+            this.currentDialogGroup.push(newData);
+            this.$nextTick(() => {
+                this.$refs.dialog.scrollTo(0, 100000);
             });
-
-            data.data = this.dialogGroupData[currentIndex].data;
-            this.dialogGroupData[currentIndex] = data;
-            this.currentDialogGroupName = this.dialogGroupData[
-                currentIndex
-            ].groupName;
-
-            this.dialogGroupData = JSON.parse(
-                JSON.stringify(this.dialogGroupData)
-            );
-        },
-        // 当前在线
-        async currentOnLine(data) {
-            const datas = await this.axios.post("/getCurrentOnLine", {
-                body: JSON.stringify(data),
-            });
-            console.log("查看当前在线用户");
-            console.log(datas);
         },
 
         // 处理消息的响应
@@ -178,18 +148,14 @@ export default {
 
             ws.onmessage = (event) => {
                 let data = JSON.parse(event.data);
-
                 console.log("触发websocket");
-                console.log(data);
+                // console.log(data);
                 switch (data.state) {
                     case "new":
                         this.addGroup(data);
                         break;
                     case "edit":
-                        this.eidtGroup(data);
-                        break;
-                    case "onLine":
-                        this.currentOnLine(data);
+                        this.editGroupData(data);
                         break;
                     default:
                         this.filterMessage(data);
@@ -197,12 +163,24 @@ export default {
                 }
             };
         },
-
-        // 获取所有群的聊天记录
-        async getDialogData() {
-            const data = await this.axios.get("/getDialogData");
-            this.dialogGroupData = data.data;
-        },
+    },
+    created() {
+        this.nowName = sessionStorage.getItem("nowName");
+        this.websocket();
+        this.editGroup();
+        Bus.$on("currentGroupMessage", (data) => {
+            // 从兄弟组件获取到当前群聊的信息
+            this.currentGroup = data;
+            this.currentDialogGroup = data.data;
+            this.currentDialogGroupName = data.groupName;
+            this.currentGrouppicture = data.picture;
+        });
+    },
+    mounted() {
+        // 延时处理，因为获取数据时是异步的
+        setTimeout(() => {
+            this.dialogGroupData = this.$root.allDialogGroupData;
+        }, 1000);
     },
 };
 </script>

@@ -56,7 +56,8 @@ const router = new VueRouter({
 new Vue({
     router,
     data: {
-        userList: []
+        userList: [],
+        allDialogGroupData: []
     },
     render: (h) => h(App),
 }).$mount("#app");

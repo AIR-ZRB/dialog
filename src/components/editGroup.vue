@@ -1,14 +1,7 @@
 <template>
-    <!-- <div class="addGroup" @click="cancelEdit" v-show="_props.editGroupShow "> -->
     <div class="addGroup" @click="cancelEdit">
         <div class="addGroupBox">
-            <img
-                :src="picture"
-                alt=""
-                width="100"
-                height="100"
-                class="picture"
-            />
+            <img :src="picture" width="100" height="100" class="picture" />
             <section>
                 <p>群头像</p>
                 <el-input
@@ -48,8 +41,9 @@
 </template>
 
 <script>
+import Bus from "../bus";
 export default {
-    props: ["editData", "editGroupShow","currentState"],
+    props: ["editData", "editGroupShow", "currentState"],
     data() {
         return {
             input: "", // 群名
@@ -58,6 +52,8 @@ export default {
             groupMembers: ["青空", "路人A", "路人B"], // 群成员
             groupTags: ["交流群", "Vue"], // 群标签
             edit: "创建",
+            state: "",
+            data: [],
         };
     },
     methods: {
@@ -67,33 +63,35 @@ export default {
         },
         // 传给父组件的
         submitData() {
-
             let GroupData = {
                 groupName: this.input, // 当前群名
                 picture: this.picture, // 群头像
                 groupMembers: this.groupMembers, // 群成员
                 groupTags: this.groupTags, // 群标签
-                data: [], // 聊天数据
+                data: this.data, // 聊天数据
             };
 
-            // 在修改状态下才会有this._props.editData
-            this._props.currentState === "edit" ?  GroupData.state = "edit" :GroupData.state = "new";
-            this.$emit("submitData", GroupData);
+            // 在修改状态下才会有
+            this.state == "edit"
+                ? (GroupData.state = "edit")
+                : (GroupData.state = "new");
+            Bus.$emit("editGroup", GroupData);
+            this.$emit("update:editGroupShow", false);
         },
         cancelEdit() {
-            if (event.target.className === "addGroup") {
-                this.$emit("submitData", false);
-            }
+            event.target.className === "addGroup" &&
+                this.$emit("update:editGroupShow", false);
         },
     },
     created() {
-        if (this.editData && this.currentState === "edit") {
-            this.input = this._props.editData.groupName;
-            this.picture = this._props.editData.picture;
-            this.groupMembers = this._props.editData.groupMembers;
-            this.groupTags = this._props.editData.groupTags;
+        Bus.$on("editGroupData", (data) => {
+            this.data = data.currentGroup.data;
+            this.input = data.currentGroup.groupName;
+            this.picture = data.currentGroup.picture;
+
+            this.state = data.state;
             this.edit = "修改";
-        }
+        });
     },
 };
 </script>

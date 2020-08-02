@@ -12,24 +12,19 @@
             />
         </div>
         <!-- 右边发消息区域 -->
-        <dialogArea />
+        <dialogArea :editGroupShow.sync="editGroupShow" />
         <!-- 修改/添加群使用 -->
-        <editGroup
-            @submitData="editGroups"
-            :currentState="currentState"
-            v-if="editGroupShow"
-        />
+        <editGroup :editGroupShow.sync="editGroupShow" v-show="editGroupShow" />
     </div>
 </template>
 <script>
 import dialogArea from "./dialogArea";
-import Bus from "../../bus"
+// import Bus from "../../bus";
 export default {
     data() {
         return {
             dialogGroupData: [], // 相当于dialogData文件
             editGroupShow: false,
-            currentState: "",
         };
     },
     components: { dialogArea },
@@ -43,24 +38,6 @@ export default {
         },
     },
     methods: {
-        // 修改群
-        eidtGroup(data) {
-            console.log("Edit Group");
-
-            let currentIndex = this.dialogGroupData.findIndex((item) => {
-                return item.groupName === this.editGroupName;
-            });
-
-            data.data = this.dialogGroupData[currentIndex].data;
-            this.dialogGroupData[currentIndex] = data;
-            this.currentDialogGroupName = this.dialogGroupData[
-                currentIndex
-            ].groupName;
-
-            this.dialogGroupData = JSON.parse(
-                JSON.stringify(this.dialogGroupData)
-            );
-        },
         // 获取所有群的聊天记录
         async getDialogData() {
             const data = await this.axios.get("/getDialogData");
@@ -68,6 +45,7 @@ export default {
                 item.active = false;
             });
             this.dialogGroupData = data.data;
+            this.$root.allDialogGroupData =  this.dialogGroupData;
         },
     },
 
@@ -75,7 +53,6 @@ export default {
     created() {
         // 请求聊天数据
         this.getDialogData();
-        
     },
 };
 </script>

@@ -18,8 +18,36 @@ export default {
             });
             this.$root.userList = userMessage.data;
         },
+        // 当前在线
+        // async currentOnLine(data) {
+        //     const datas = await this.axios.post("/getCurrentOnLine", {
+        //         body: JSON.stringify(data),
+        //     });
+        //     console.log("查看当前在线用户");
+        //     console.log(datas);
+        // },
+        // sendWebsocket(data) {
+        //     const ws = new WebSocket("ws://localhost:3000/");
+        //     ws.onopen = () => ws.send(JSON.stringify(data));
+        // },
+        // websocket() {
+        //     const ws = new WebSocket("ws://localhost:3000/");
+        //     ws.onmessage = (event) => {
+        //         let data = JSON.parse(event.data);
+        //     };
+        // },
     },
     created() {
+        console.log("用户列表首次渲染");
+        // 发送在线消息
+        // this.sendWebsocket({
+        //     state: "onLine",
+        //     name: this.nowName,
+        //     picture: "blue",
+        // });
+        // this.currentOnLine();
+        // this.websocket();
+
         window.onbeforeunload = function() {
             alert("???");
         };

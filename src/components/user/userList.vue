@@ -32,6 +32,8 @@ export default {
             });
             Bus.$emit("getUserMessage", this._props.message);
         },
+
+      
     },
     directives: {
         clickActive: {
