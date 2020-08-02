@@ -1,16 +1,13 @@
 <template>
     <div class="index">
         <!-- 聊天组 -->
-        <navigation @clickActiveGroup="clickActiveGroup" />
+        <navigation />
         <router-view></router-view>
     </div>
 </template>
 
 <script>
 export default {
-    data() {
-        return {};
-    },
     methods: {
         // 用于判断是新增群还是修改群
         clickActiveGroup(text) {

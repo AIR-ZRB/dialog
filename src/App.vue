@@ -10,6 +10,7 @@ export default {
         return {};
     },
     methods: {
+        // 请求当前的用户
         async requestUser() {
             const userMessage = await this.axios.get("/getUser");
             userMessage.data.forEach((item) => {

@@ -7,10 +7,7 @@
                 :to="item.en"
             >
                 <i
-                    :class="[
-                        item.icon,
-                        item.active == true ? 'heightLight' : '',
-                    ]"
+                    :class="[item.icon, item.active ? 'heightLight' : '']"
                     :title="item.name"
                     v-iconActive
                     @click="() => iconHeightLight(index)"

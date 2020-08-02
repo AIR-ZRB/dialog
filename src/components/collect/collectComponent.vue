@@ -1,15 +1,6 @@
 <template>
     <div class="collect">
         <search />
-
-        <div class="picture-list">
-            <ul>
-                <li v-for="item in fileList" :key="item">
-                    <img :src="item" />
-                </li>
-            </ul>
-        </div>
-
         <el-upload
             action="http://localhost:3000/pictureUpload"
             list-type="picture-card"
@@ -20,6 +11,13 @@
         >
             <i class="el-icon-plus"></i>
         </el-upload>
+        <div class="picture-list">
+            <ul>
+                <li v-for="item in fileList" :key="item">
+                    <img :src="item" />
+                </li>
+            </ul>
+        </div>
 
         <el-dialog :visible.sync="dialogVisible">
             <img width="100%" :src="dialogImageUrl" alt="" />
@@ -94,19 +92,14 @@ export default {
         }
     }
     .el-upload-list {
-        // display: flex;
-        // justify-content: space-between;
-        // flex-wrap: wrap;
-
         .el-upload-list__item {
             width: 20%;
             height: 100%;
         }
     }
     .picture-list {
+        margin-top: 20px;
         ul {
-            // display:     flex;
-            // flex-wrap: wrap;
             column-count: 3;
             column-gap: 20px;
             width: 100%;
@@ -114,9 +107,13 @@ export default {
                 margin: 10px 0;
                 width: 100%;
                 list-style: none;
+
                 img {
                     width: 100%;
                     height: 100%;
+                    border-radius: 6px;
+                    overflow: hidden;
+                    box-shadow: #ccc 0px 0px 20px;
                 }
             }
         }

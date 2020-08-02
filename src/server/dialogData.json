@@ -12,5 +12,19 @@
                 "dialog": "123123"
             }
         ]
+    },
+    {
+        "picture": "https://pic4.zhimg.com/80/v2-bfdf1bf48988291c43ab3c1ed1d02526_720w.jpg",
+        "groupName": "步步基本群聊",
+        "data": [
+            {
+                "name": "路人A",
+                "dialog": "2222"
+            },
+            {
+                "name": "路人B",
+                "dialog": "333"
+            }
+        ]
     }
 ]

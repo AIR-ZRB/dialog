@@ -1,44 +1,39 @@
 <template>
-    <div class="dialogGroupItems" @click="giveParentMessage">
-        <img :src="_props.picture" alt class="GroupPhoto" />
+    <div
+        :class="['dialogGroupItems', _props.group.active ? 'lightHeight' : '']"
+        @click="giveParentMessage"
+    >
+        <img :src="_props.group.picture" alt class="GroupPhoto" />
         <div class="message">
-            <p>{{ _props.groupName }}</p>
-            <p>last dialog</p>
-            <!-- <p>{{_props.lastDialog}}</p> -->
+            <p>{{ _props.group.groupName }}</p>
+            <p>{{ lastDialog }}</p>
         </div>
     </div>
 </template>
 
 <script>
+import Bus from "../../bus";
 export default {
-    data() {
-        return {};
+    props: ["group", "allData"],
+    computed: {
+        // 筛选最后一句话
+        lastDialog() {
+            let user = this._props.group.data.length;
+            let dialog = this._props.group.data[user - 1].dialog;
+            user = this._props.group.data[user - 1].name;
+            return `${user}：${dialog}`;
+        },
     },
     methods: {
         giveParentMessage() {
             // 给父组件传值的
-            this.$emit("update:currentGroup", this._props.allData);
-
-            this.$emit("update:currentDialogGroup", this._props.allData.data);
-            this.$emit(
-                "update:currentDialogGroupName",
-                this._props.allData.groupName
-            );
-            this.$emit("update:editGroupName", this._props.groupName);
-
-            let dialogGroupItems = document.getElementsByClassName(
-                "dialogGroupItems"
-            );
-
-            dialogGroupItems.forEach((element, index) => {
-                this._props.index === index
-                    ? element.classList.add("lightHeight")
-                    : element.classList.remove("lightHeight");
+            this._props.allData.forEach((element) => {
+                element.active = false;
             });
+            this._props.group.active = true;
+            Bus.$emit("currentGroupMessage", this._props.group);
         },
     },
-    created() {},
-    props: ["picture", "groupName", "allData", "index"],
 };
 </script>
 
@@ -65,7 +60,6 @@ export default {
         p {
             &:first-child {
                 font-size: 20px;
-                margin-bottom: 10px;
             }
             &:last-child {
                 font-size: 14px;

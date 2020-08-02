@@ -19,13 +19,14 @@ export default {
     margin-bottom: 10px;
     font-size: 18px;
     width: 100%;
-    float: left;
     .id {
         font-size: 16px;
         color: #999;
         margin-bottom: 10px;
     }
     .dialog {
+        width: 120px;
+        height: 50px;
         padding: 10px 20px;
         background: var(--theme-dialog-rests-color);
         color: var(--theme-dialog-rests-text-color);
