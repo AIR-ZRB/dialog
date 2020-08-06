@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import Bus from "../bus"
 export default {
     data() {
         return {
@@ -57,7 +58,7 @@ export default {
             this.listMenu[index].active = true;
         },
         addGroup() {
-            this.$emit("clickActiveGroup", "add");
+            Bus.$emit("clickActiveGroup");
         },
     },
     directives: {

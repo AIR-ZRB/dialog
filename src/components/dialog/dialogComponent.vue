@@ -12,14 +12,17 @@
             />
         </div>
         <!-- 右边发消息区域 -->
-        <dialogArea :editGroupShow.sync="editGroupShow" />
+        <dialogArea
+            :editGroupShow.sync="editGroupShow"
+            :getDialogGroupData.sync="dialogGroupData"
+        />
         <!-- 修改/添加群使用 -->
         <editGroup :editGroupShow.sync="editGroupShow" v-show="editGroupShow" />
     </div>
 </template>
 <script>
 import dialogArea from "./dialogArea";
-// import Bus from "../../bus";
+import Bus from "../../bus";
 export default {
     data() {
         return {
@@ -44,8 +47,8 @@ export default {
             data.data.forEach((item) => {
                 item.active = false;
             });
-            this.dialogGroupData = data.data;
-            this.$root.allDialogGroupData =  this.dialogGroupData;
+            this.$root.allDialogGroupData = data.data;
+            this.dialogGroupData = this.$root.allDialogGroupData;
         },
     },
 
@@ -53,6 +56,7 @@ export default {
     created() {
         // 请求聊天数据
         this.getDialogData();
+        Bus.$on("clickActiveGroup", () => (this.editGroupShow = true));
     },
 };
 </script>

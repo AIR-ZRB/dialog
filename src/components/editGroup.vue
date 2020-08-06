@@ -71,6 +71,8 @@ export default {
                 data: this.data, // 聊天数据
             };
 
+            console.log(this.state);
+            console.log(this.input);
             // 在修改状态下才会有
             this.state == "edit"
                 ? (GroupData.state = "edit")
@@ -82,16 +84,20 @@ export default {
             event.target.className === "addGroup" &&
                 this.$emit("update:editGroupShow", false);
         },
+        getData() {
+            Bus.$on("editGroupData", (data) => {
+                this.data = data.currentGroup.data;
+                this.input = data.currentGroup.groupName;
+                this.picture = data.currentGroup.picture;
+                this.edit = "修改";
+            });
+        },
     },
     created() {
-        Bus.$on("editGroupData", (data) => {
-            this.data = data.currentGroup.data;
-            this.input = data.currentGroup.groupName;
-            this.picture = data.currentGroup.picture;
-
-            this.state = data.state;
-            this.edit = "修改";
-        });
+        this.getData();
+    },
+    updated() {
+        this.getData();
     },
 };
 </script>

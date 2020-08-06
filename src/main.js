@@ -56,6 +56,7 @@ const router = new VueRouter({
 new Vue({
     router,
     data: {
+        wsAddress: "ws://localhost:3000/",
         userList: [],
         allDialogGroupData: []
     },
