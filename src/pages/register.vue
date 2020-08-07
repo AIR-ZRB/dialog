@@ -98,8 +98,8 @@ export default {
             });
 
             if (flag.data) {
-                this.$message.success({ message: "登录成功" });
                 sessionStorage.setItem("nowName", this.name);
+                this.$message.success({ message: "登录成功" });
                 this.$router.push("/index/dialog");
             } else {
                 this.$message.error({ message: "账号/密码/验证码错误" });

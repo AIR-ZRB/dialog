@@ -15,6 +15,9 @@ export default {
             this.currentState = text;
         },
     },
+    created() {
+        this.$router.push("/index/dialog");
+    },
 };
 </script>
 

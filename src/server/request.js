@@ -10,7 +10,7 @@ const mailTransport = nodemailer.createTransport({
     secureConnection: true, // 使用SSL方式（安全方式，防止被窃取信息）
     auth: {
         user: "1824735904@qq.com",
-        pass: "",
+        pass: "",       // 授权码
     },
 });
 let verificationCode = 0;

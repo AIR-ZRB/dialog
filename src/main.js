@@ -36,6 +36,12 @@ Vue.component("navigation", navigation);
 Vue.component("editGroup", editGroup);
 Vue.component("search", search);
 
+// 解决push封装成Promise写法报错
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+    return originalPush.call(this, location).catch((err) => err);
+};
+
 const router = new VueRouter({
     routes: [
         { path: "/", redirect: "register" },
@@ -53,12 +59,28 @@ const router = new VueRouter({
     ],
 });
 
+router.beforeEach((to, from, next) => {
+    console.log(to.path);
+    if (to.path === "/index/dialog") {
+        const nowName = window.sessionStorage.getItem("nowName");
+        if (nowName) {
+            return next();
+        } else {
+            return next({
+                path: "/register",
+            });
+        }
+    }
+
+    next();
+});
+
 new Vue({
     router,
     data: {
         wsAddress: "ws://localhost:3000/",
         userList: [],
-        allDialogGroupData: []
+        allDialogGroupData: [],
     },
     render: (h) => h(App),
 }).$mount("#app");

@@ -50,7 +50,6 @@ export default {
         // });
         // this.currentOnLine();
         // this.websocket();
-        this.$router.push("/index/dialog")
         window.onbeforeunload = () => {
             alert("???");
             this.sendWebsocket({
