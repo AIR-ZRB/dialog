@@ -2,6 +2,18 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const fs = require("fs");
+const nodemailer = require("nodemailer");
+
+const mailTransport = nodemailer.createTransport({
+    host: "mail.qq.com",
+    service: "QQ",
+    secureConnection: true, // 使用SSL方式（安全方式，防止被窃取信息）
+    auth: {
+        user: "1824735904@qq.com",
+        pass: "",
+    },
+});
+let verificationCode = 0;
 
 // Promise封装读取函数
 let _readFile = (filePath) => {
@@ -30,10 +42,32 @@ const dialogFile = path.join(__dirname, "dialogData.json");
 
 //注册模块
 router.post("/register", async (req, res) => {
+    // 如果验证码不正确
     const data = await _readFile(accountFile);
+    if (req.body.verificationCode != verificationCode ) {
+        res.end("false");
+        return;
+    }
+
+    let flag = data.some((item)=>{
+        return item.id == req.body.id;
+    })
+
+    if(flag.length !=0 ){
+        res.end("false");
+        return;
+    }
+  
+
+    res.end("true");
+    console.log(data)
+    // 信息添加，后期可修改
+    req.body.picture =
+        "https://pic1.zhimg.com/80/v2-0d3a635ba2703360e0aac4afc71e91b2_720w.jpg";
+    req.body.sex = "男";
+    // ------
     data.push({ ...req.body });
     _writeFile(accountFile, data);
-    res.redirect("http://localhost:8080/#/index/dialog");
 });
 
 // 登录模块
@@ -46,11 +80,7 @@ router.post("/signIn", async (req, res) => {
     });
 
     // 手动跳转
-    if (signInData.length != 0) {
-        res.redirect("http://localhost:8080/#/index/dialog");
-    } else {
-        res.redirect("http://localhost:8080/#/register");
-    }
+    signInData.length != 0 ? res.end("true") : res.end("false");
 });
 
 // 获取当前用户数据
@@ -87,8 +117,10 @@ router.get("/getPictureUrl", (req, res) => {
 // 获取图片准确地址
 router.get("/getPicture/*", (req, res) => {
     const fileName = req.url.split("/");
-    console.log(req.url)
-    res.sendFile(__dirname + "/uploads/images/" + fileName[fileName.length - 1]);
+    console.log(req.url);
+    res.sendFile(
+        __dirname + "/uploads/images/" + fileName[fileName.length - 1]
+    );
 });
 
 // 上传文件接口
@@ -111,6 +143,24 @@ router.post("/getCurrentOnLine", (req, res) => {
     });
     flag || currentOnLine.push(req.body);
     res.end(JSON.stringify(currentOnLine));
+});
+
+// 发送邮件验证码
+router.post("/sendEmail", function(req, res, next) {
+    verificationCode = Math.random() * 1000000;
+    verificationCode = parseInt(verificationCode);
+
+    var options = {
+        from: "1824735904@qq.com",
+        to: req.body.id,
+        subject: "一封来自Air Dialog的邮件",
+        text: `亲爱的用户，这是你的验证码：${verificationCode}`,
+    };
+    mailTransport.sendMail(options, function(err, msg) {
+        if (err) throw err;
+        console.log(msg);
+        res.render("index", { title: "已接收：" + msg.accepted });
+    });
 });
 
 module.exports = router;

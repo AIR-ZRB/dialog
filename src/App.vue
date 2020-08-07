@@ -18,6 +18,10 @@ export default {
             });
             this.$root.userList = userMessage.data;
         },
+        sendWebsocket(data) {
+            const ws = new WebSocket(this.$root.wsAddress);
+            ws.onopen = () => ws.send(JSON.stringify(data));
+        },
         // 当前在线
         // async currentOnLine(data) {
         //     const datas = await this.axios.post("/getCurrentOnLine", {
@@ -38,7 +42,6 @@ export default {
         // },
     },
     created() {
-        console.log("用户列表首次渲染");
         // 发送在线消息
         // this.sendWebsocket({
         //     state: "onLine",
@@ -47,14 +50,19 @@ export default {
         // });
         // this.currentOnLine();
         // this.websocket();
-
-        window.onbeforeunload = function() {
+        this.$router.push("/index/dialog")
+        window.onbeforeunload = () => {
             alert("???");
+            this.sendWebsocket({
+                groupName: "基本群聊",
+                name: "白鸟留依",
+                dialog: "hhhhhhh",
+                state: "dialog",
+            });
+            window.localStorage.setItem("aa", "bb");
         };
 
-        window.onunload = function() {
-            alert("??????");
-        };
+        window.onunload = () => {};
         this.requestUser();
     },
 };

@@ -5,8 +5,7 @@
             <div>
                 <h3>{{ message.id }}</h3>
                 <ul>
-                    <li>账号：1057605824</li>
-                    <li>姓名：{{ message.id }}</li>
+                    <li>邮箱：{{ message.id }}</li>
                     <li>性别：{{ message.sex }}</li>
                 </ul>
             </div>
@@ -54,7 +53,7 @@ export default {
             margin: 20px 0;
         }
         ul {
-            width: 200px;
+            width: 300px;
             margin: auto;
             li {
                 list-style: none;

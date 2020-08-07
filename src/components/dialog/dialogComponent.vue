@@ -49,27 +49,12 @@ export default {
             });
             this.dialogGroupData = data.data;
         },
-        sendWebsocket(data) {
-            const ws = new WebSocket(this.$root.wsAddress);
-            ws.onopen = () => ws.send(JSON.stringify(data));
-        },
     },
 
-    // 生命周期，组件还未初始化
     created() {
         // 请求聊天数据
         this.getDialogData();
         Bus.$on("clickActiveGroup", () => (this.editGroupShow = true));
-    },
-    mounted() {
-        setTimeout(() => {
-            this.sendWebsocket({
-                groupName: "基本群聊",
-                name: "白鸟留依",
-                dialog: "hhhhhhh",
-                state: "dialog",
-            });
-        }, 2000);
     },
 };
 </script>
