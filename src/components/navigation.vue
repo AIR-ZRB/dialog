@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import Bus from "../bus"
+import Bus from "../bus";
 export default {
     data() {
         return {
@@ -59,6 +59,7 @@ export default {
         },
         addGroup() {
             Bus.$emit("clickActiveGroup");
+            Bus.$emit("editGroupData", { state: "new" });
         },
     },
     directives: {

@@ -61,9 +61,18 @@ export default {
             const ws = new WebSocket(this.$root.wsAddress);
             ws.onopen = () => ws.send(JSON.stringify(data));
         },
+        // 处理消息的响应
+        websocket() {
+            const ws = new WebSocket(this.$root.wsAddress);
+            ws.onmessage = (event) => {
+                event = JSON.parse(event.data);
+                event.state === "dialog" && this.newMessage(event);
+                event.state === "new" && this.addGroup(event);
+                event.state === "edit" && this.editGroup(event);
+            };
+        },
         // 点击发送按钮，发送信息
         outputMessage() {
-            console.log(this.currentGroup);
             this.sendWebsocket({
                 groupName: this.currentGroup.groupName,
                 name: this.nowName,
@@ -76,83 +85,60 @@ export default {
         settingButton() {
             let currentGroup = this.currentGroup;
             this.$emit("update:editGroupShow", true);
-            Bus.$emit("editGroupData", { currentGroup });
+            Bus.$emit("editGroupData", { currentGroup, state: "edit" });
         },
+        // 添加组
+        addGroup(data) {
+            let dialogData = this._props.getDialogGroupData;
+            let flag = dialogData.some((item) => {
+                return item.groupName === data.groupName;
+            });
+            // 如果相同的组名，则提示
+            if (flag) {
+                this.$notify.error({
+                    title: "错误",
+                    message: "群已存在",
+                });
+                return;
+            }
 
+            dialogData.push(data);
+            this.$emit("update:getDialogGroupData", dialogData);
+
+            this.$notify.success({
+                title: "成功",
+                message: "创建成功",
+            });
+        },
         // 通过返回的数据，修改群信息
         editGroup(data) {
-            let currentIndex = this.dialogGroupData.findIndex((item) => {
+            const dialogData = this._props.getDialogGroupData;
+            let currentIndex = dialogData.findIndex((item) => {
                 return item.groupName === this.currentGroup.groupName;
             });
-            let allDialogData = this.$root.allDialogGroupData[currentIndex];
+            let allDialogData = dialogData[currentIndex];
             allDialogData.groupName = data.groupName;
             allDialogData.picture = data.picture;
         },
-
-        // 添加组
-        addGroup(data) {
-            console.log(data);
-            let flag = this.$root.allDialogGroupData.some((item) => {
-                return item.groupName === data.groupName;
-            });
-            console.log(flag);
-            // 如果相同的组名，则提示
-            // if (flag) {
-            //     this.$notify.error({
-            //         title: "错误",
-            //         message: "群组已存在",
-            //     });
-            //     return;
-            // }
-
-            if (!flag) {
-                const getData = JSON.parse(
-                    JSON.stringify(this.dialogGroupData)
-                );
-
-                getData.push(data);
-
-                this.$root.allDialogGroupData = getData;
-                this.$notify({
-                    title: "成功",
-                    message: "创建成功",
-                    type: "success",
-                });
-            }
-        },
-
         // 在不同群聊时过滤消息，添加消息
         newMessage(data) {
-            let currentIndex = this.dialogGroupData.findIndex((item) => {
+            const dialogData = this._props.getDialogGroupData;
+            let currentIndex = dialogData.findIndex((item) => {
                 return item.groupName === data.groupName;
             });
-            this.dialogGroupData[currentIndex].data.push(data);
-            this.$nextTick(() => this.$refs.dialog.scrollTo(0, 100000));
-        },
-
-        // 处理消息的响应
-        websocket() {
-            const ws = new WebSocket(this.$root.wsAddress);
-            ws.onmessage = (event) => {
-                event = JSON.parse(event.data);
-                event.state === "dialog" && this.newMessage(event);
-                event.state === "new" && this.addGroup(event);
-                event.state === "edit" && this.editGroup(event);
-            };
+            dialogData[currentIndex].data.push(data);
+            this.$nextTick(() => this.$refs.dialog.scrollTo(0, 1000000000));
         },
     },
     created() {
+        // 建立websocket连接
+        this.websocket();
         // 从兄弟组件获取到当前群聊的信息
         Bus.$on("currentGroupMessage", (data) => (this.currentGroup = data));
         // 修改/添加群触发
         Bus.$on("editGroup", (data) => data && this.sendWebsocket(data));
-
+        
         this.nowName = sessionStorage.getItem("nowName");
-        this.websocket();
-        // 延时处理，因为获取数据时是异步的
-        setTimeout(() => {
-            this.dialogGroupData = this.$root.allDialogGroupData;
-        }, 200);
     },
 };
 </script>

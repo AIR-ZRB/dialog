@@ -47,8 +47,11 @@ export default {
             data.data.forEach((item) => {
                 item.active = false;
             });
-            this.$root.allDialogGroupData = data.data;
-            this.dialogGroupData = this.$root.allDialogGroupData;
+            this.dialogGroupData = data.data;
+        },
+        sendWebsocket(data) {
+            const ws = new WebSocket(this.$root.wsAddress);
+            ws.onopen = () => ws.send(JSON.stringify(data));
         },
     },
 
@@ -57,6 +60,16 @@ export default {
         // 请求聊天数据
         this.getDialogData();
         Bus.$on("clickActiveGroup", () => (this.editGroupShow = true));
+    },
+    mounted() {
+        setTimeout(() => {
+            this.sendWebsocket({
+                groupName: "基本群聊",
+                name: "白鸟留依",
+                dialog: "hhhhhhh",
+                state: "dialog",
+            });
+        }, 2000);
     },
 };
 </script>

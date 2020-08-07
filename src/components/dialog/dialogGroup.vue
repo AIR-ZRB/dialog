@@ -18,10 +18,15 @@ export default {
     computed: {
         // 筛选最后一句话
         lastDialog() {
-            let user = this._props.group.data.length;
-            let dialog = this._props.group.data[user - 1].dialog;
-            user = this._props.group.data[user - 1].name;
-            return `${user}：${dialog}`;
+            // let user = this._props.group.data.length;
+            // let dialog = this._props.group.data[user - 1].dialog;
+            // if (user && dialog) {
+            //     user = this._props.group.data[user - 1].name;
+            //     return `${user}：${dialog}`;
+            // }
+            // console.log(dialog)
+
+            return ``;
         },
     },
     methods: {

@@ -52,7 +52,7 @@ export default {
             groupMembers: ["青空", "路人A", "路人B"], // 群成员
             groupTags: ["交流群", "Vue"], // 群标签
             edit: "创建",
-            state: "",
+            state: "new",
             data: [],
         };
     },
@@ -69,14 +69,11 @@ export default {
                 groupMembers: this.groupMembers, // 群成员
                 groupTags: this.groupTags, // 群标签
                 data: this.data, // 聊天数据
+                state: this.state,
+                active: false,
             };
 
-            console.log(this.state);
-            console.log(this.input);
             // 在修改状态下才会有
-            this.state == "edit"
-                ? (GroupData.state = "edit")
-                : (GroupData.state = "new");
             Bus.$emit("editGroup", GroupData);
             this.$emit("update:editGroupShow", false);
         },
@@ -86,10 +83,19 @@ export default {
         },
         getData() {
             Bus.$on("editGroupData", (data) => {
-                this.data = data.currentGroup.data;
-                this.input = data.currentGroup.groupName;
-                this.picture = data.currentGroup.picture;
-                this.edit = "修改";
+                if (data.state === "new") {
+                    this.input = "";
+                    this.active = false;
+                    this.edit = "创建";
+                } else {
+                    this.active = data.active;
+                    this.data = data.currentGroup.data;
+                    this.input = data.currentGroup.groupName;
+                    this.picture = data.currentGroup.picture;
+                    this.edit = "修改";
+                }
+
+                this.state = data.state;
             });
         },
     },
