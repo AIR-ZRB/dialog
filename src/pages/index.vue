@@ -14,9 +14,21 @@ export default {
             this.editGroupShow = true;
             this.currentState = text;
         },
+        sendWebsocket(data) {
+            const ws = new WebSocket(this.$root.wsAddress);
+            ws.onopen = () => ws.send(JSON.stringify(data));
+        },
     },
     created() {
+        const name = sessionStorage.getItem("nowName");
         this.$router.push("/index/dialog");
+        window.addEventListener("unload", logData, false);
+        function logData() {
+            navigator.sendBeacon("http://localhost:3000/TapeOut/" + name);
+            this.sendWebsocket({
+                state: "onLine",
+            });
+        }
     },
 };
 </script>

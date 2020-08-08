@@ -69,6 +69,7 @@ export default {
                 event.state === "dialog" && this.newMessage(event);
                 event.state === "new" && this.addGroup(event);
                 event.state === "edit" && this.editGroup(event);
+                event.state === "onLine" && this.currentOnLine(event);
             };
         },
         // 点击发送按钮，发送信息
@@ -129,16 +130,33 @@ export default {
             dialogData[currentIndex].data.push(data);
             this.$nextTick(() => this.$refs.dialog.scrollTo(0, 1000000000));
         },
+        // 当前在线
+        async currentOnLine(data) {
+            const datas = await this.axios.post("/getCurrentOnLine", {
+                user: JSON.stringify(data),
+            });
+            // 如果两个在线该如何处理（递归）
+            // 
+            // this.$root.userList.forEach((item)=>{
+            // })
+            console.log("查看当前在线用户");
+            console.log(datas.data);
+        },
     },
     created() {
+        // 获取当前用户名
+        this.nowName = sessionStorage.getItem("nowName");
         // 建立websocket连接
         this.websocket();
         // 从兄弟组件获取到当前群聊的信息
         Bus.$on("currentGroupMessage", (data) => (this.currentGroup = data));
         // 修改/添加群触发
         Bus.$on("editGroup", (data) => data && this.sendWebsocket(data));
-        
-        this.nowName = sessionStorage.getItem("nowName");
+        // 发送在线消息;
+        this.sendWebsocket({
+            state: "onLine",
+            name: this.nowName,
+        });
     },
 };
 </script>

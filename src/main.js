@@ -60,7 +60,6 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    console.log(to.path);
     if (to.path === "/index/dialog") {
         const nowName = window.sessionStorage.getItem("nowName");
         if (nowName) {

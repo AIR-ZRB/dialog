@@ -8,7 +8,7 @@
         <img :src="_props.message.picture" class="list-picture" />
         <div class="message">
             <p>{{ _props.message.id }}</p>
-            <p>当前在线</p>
+            <p>{{_props.message.onLine ? "当前在线": "不在线"}}</p>
         </div>
     </div>
 </template>
@@ -30,6 +30,7 @@ export default {
             this.$root.userList.forEach((item) => {
                 if (item.id === this._props.message.id) item.active = true;
             });
+            console.log(this.$root.userList)
             Bus.$emit("getUserMessage", this._props.message);
         },
 

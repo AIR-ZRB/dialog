@@ -10,7 +10,7 @@ const mailTransport = nodemailer.createTransport({
     secureConnection: true, // 使用SSL方式（安全方式，防止被窃取信息）
     auth: {
         user: "1824735904@qq.com",
-        pass: "",       // 授权码
+        pass: "", // 授权码
     },
 });
 let verificationCode = 0;
@@ -44,23 +44,22 @@ const dialogFile = path.join(__dirname, "dialogData.json");
 router.post("/register", async (req, res) => {
     // 如果验证码不正确
     const data = await _readFile(accountFile);
-    if (req.body.verificationCode != verificationCode ) {
+    if (req.body.verificationCode != verificationCode) {
         res.end("false");
         return;
     }
 
-    let flag = data.some((item)=>{
+    let flag = data.some((item) => {
         return item.id == req.body.id;
-    })
+    });
 
-    if(flag.length !=0 ){
+    if (flag.length != 0) {
         res.end("false");
         return;
     }
-  
 
     res.end("true");
-    console.log(data)
+    console.log(data);
     // 信息添加，后期可修改
     req.body.picture =
         "https://pic1.zhimg.com/80/v2-0d3a635ba2703360e0aac4afc71e91b2_720w.jpg";
@@ -137,12 +136,23 @@ router.post("/fileUpload/*", (req, res) => {
 // 当前在线
 let currentOnLine = [];
 router.post("/getCurrentOnLine", (req, res) => {
-    console.log(req.body);
+    let userMessage = JSON.parse(req.body.user);
     let flag = currentOnLine.some((item) => {
-        return item.name === req.body.name;
+        return item.name === userMessage.name;
     });
-    flag || currentOnLine.push(req.body);
+    flag || currentOnLine.push(userMessage);
     res.end(JSON.stringify(currentOnLine));
+});
+
+// 下线不会发送websocket请求
+router.post("/TapeOut/*", (req, res) => {
+    console.log(`用户下线${req.params[0]}`);
+    let index = currentOnLine.findIndex((item) => {
+        return item.name === req.params[0];
+    });
+    
+    index && currentOnLine.splice(index, 1);
+    console.log(currentOnLine);
 });
 
 // 发送邮件验证码
