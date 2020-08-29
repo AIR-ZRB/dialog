@@ -128,8 +128,10 @@ export default {
                 return item.groupName === data.groupName;
             });
             dialogData[currentIndex].data.push(data);
-            console.log(this.$refs.dialog);
-            this.$nextTick(() => this.$refs.dialog.scrollTo(0, 1000000000));
+            console.log();
+            this.$nextTick(() => {
+                this.$refs.dialog && this.$refs.dialog.scrollTo(0, 1000000000);
+            });
         },
         // 当前在线
         async currentOnLine(data) {
@@ -137,7 +139,7 @@ export default {
                 user: JSON.stringify(data),
             });
             // 如果两个在线该如何处理（递归）
-            // 
+            //
             // this.$root.userList.forEach((item)=>{
             // })
             console.log("查看当前在线用户");

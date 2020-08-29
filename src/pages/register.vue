@@ -96,7 +96,6 @@ export default {
                 password: this.password,
                 verificationCode: this.verificationCode,
             });
-            console.log(flag.data);
 
             if (flag.data === true) {
                 sessionStorage.setItem("nowName", this.name);
@@ -116,11 +115,11 @@ export default {
         outputEmail() {
             this.axios.post("/sendEmail", { id: this.name });
             this.verificationTimer = true;
-            let sum = 0;
+            let sum = 60;
             let timer = setInterval(() => {
-                sum += 1;
+                sum -= 1;
                 this.verificationEmailText = `${sum}秒后重试`;
-                if (sum >= 60) {
+                if (sum <= 0) {
                     this.verificationTimer = false;
                     clearInterval(timer);
                     this.verificationEmailText = `发送验证码`;
@@ -146,11 +145,11 @@ export default {
 .registerBox {
     padding: 50px 20px;
     width: 450px;
-    
+
     transition: all 0.5s;
-    // color: #fff;
+
     background: rgba($color: #000000, $alpha: 0.1);
-    // box-shadow: #ccc 0px 0px 10px;
+
     text-align: center;
     transition: all 0.5s;
     transform: rotateY(0deg);
