@@ -20,14 +20,39 @@ export default {
         },
     },
     created() {
-        const name = sessionStorage.getItem("nowName");
+        // const name = sessionStorage.getItem("nowName");
         this.$router.push("/index/dialog");
         window.addEventListener("unload", logData, false);
+        // function logData() {
+        //     navigator.sendBeacon("http://localhost:3000/TapeOut/" + name);
+        //     this.sendWebsocket({
+        //         state: "onLine",
+        //     });
+        // }
+        // const datas = await this.axios.get("/test");
+        // console.log(datas);
+        // http://localhost:3000/test
+
         function logData() {
-            navigator.sendBeacon("http://localhost:3000/TapeOut/" + name);
-            this.sendWebsocket({
-                state: "onLine",
-            });
+            var oAjax = new XMLHttpRequest();
+
+            oAjax.open("get", "http://localhost:3000/test", false); //false表示同步请求
+
+            oAjax.setRequestHeader(
+                "Content-type",
+                "application/x-www-form-urlencoded"
+            );
+
+            oAjax.onreadystatechange = function() {
+                if (oAjax.readyState == 4 && oAjax.status == 200) {
+                    var data = JSON.parse(oAjax.responseText);
+                    console.log(data)
+                } else {
+                    console.log(oAjax);
+                }
+            };
+
+            oAjax.send("a=1&b=2");
         }
     },
 };

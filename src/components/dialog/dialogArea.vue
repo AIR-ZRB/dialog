@@ -128,6 +128,7 @@ export default {
                 return item.groupName === data.groupName;
             });
             dialogData[currentIndex].data.push(data);
+            console.log(this.$refs.dialog);
             this.$nextTick(() => this.$refs.dialog.scrollTo(0, 1000000000));
         },
         // 当前在线

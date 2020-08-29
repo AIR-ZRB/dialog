@@ -55,7 +55,7 @@
                     </div>
                 </div>
 
-                <div class="right-banner">
+                <!-- <div class="right-banner">
                     <h2>应用介绍</h2>
                     <p>还属于测试阶段</p>
                     <p>发邮件验证注册邮箱</p>
@@ -63,7 +63,7 @@
                     <p>可上传图片/文件</p>
                     <p>可查看当前在线用户</p>
                     <p>目前只支持群聊模式</p>
-                </div>
+                </div> -->
             </div>
         </transition>
     </div>
@@ -96,13 +96,14 @@ export default {
                 password: this.password,
                 verificationCode: this.verificationCode,
             });
+            console.log(flag.data);
 
-            if (flag.data) {
+            if (flag.data === true) {
                 sessionStorage.setItem("nowName", this.name);
                 this.$message.success({ message: "登录成功" });
                 this.$router.push("/index/dialog");
             } else {
-                this.$message.error({ message: "账号/密码/验证码错误" });
+                this.$message.error({ message: flag.data });
             }
         },
         // 注册/登录动画切换
@@ -139,20 +140,17 @@ export default {
     align-items: center;
     transform: preserve-3d;
     transition: all 0.3s;
+    background-image: url(../server/uploads/images/origin_201912152327203428.jpg);
+    background-size: 100% 100%;
 }
 .registerBox {
     padding: 50px 20px;
-    width: 900px;
-    // background:;
-    // opacity:;
+    width: 450px;
+    
     transition: all 0.5s;
-    background-image: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 1),
-            rgba(255, 255, 255, 0)
-        ),
-        url(../server/uploads/images/origin_201912152327203428.jpg);
-    box-shadow: #ccc 0px 0px 10px;
+    // color: #fff;
+    background: rgba($color: #000000, $alpha: 0.1);
+    // box-shadow: #ccc 0px 0px 10px;
     text-align: center;
     transition: all 0.5s;
     transform: rotateY(0deg);
@@ -171,7 +169,7 @@ export default {
 }
 
 .input-box {
-    width: 50%;
+    width: 100%;
     .formBox {
         margin-top: 50px;
     }
@@ -228,6 +226,7 @@ export default {
             margin-bottom: 10px;
             padding: 0 20px;
             font-size: 20px;
+            cursor: pointer;
         }
         .el-link {
             display: block;
